@@ -1,55 +1,64 @@
+<!-- 
+=======================================================================
+  CONFLICTDASH — index.html
+  Upload this as your repo's index.html
+  Also add: netlify/functions/news.mjs and netlify.toml (see other files)
+=======================================================================
+-->
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>WARWATCH — Global Conflict Intelligence Dashboard 2026</title>
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=IBM+Plex+Mono:ital,wght@0,300;0,400;0,500;0,600;1,300&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<title>ConflictDash — Global War Intelligence Dashboard 2026</title>
+<meta name="description" content="Real-time global conflict dashboard — verified casualties, geopolitics, cost of war and market impact for Ukraine, Gaza, Sudan, Iran and more.">
+<meta property="og:title" content="ConflictDash — Global War Intelligence Dashboard">
+<meta property="og:description" content="Live casualties, geopolitics and market impact across all active wars. Updated in real time.">
+<meta property="og:url" content="https://conflictdash.netlify.app/">
+<meta name="twitter:card" content="summary_large_image">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=IBM+Plex+Mono:wght@300;400;500;600&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <style>
-:root {
+:root{
   --bg:#07090d;--surface:#0c0f15;--surface2:#121820;--surface3:#181f29;
   --border:#1c2535;--border2:#243044;
   --accent:#e63946;--accent2:#f4a261;--accent3:#2ec4b6;--accent4:#e9c46a;
   --text:#b8c5d4;--dim:#4a5a6e;--bright:#eef2f7;
-  --blue:#4fc3f7;--orange:#ff9800;--red:#ef5350;--purple:#ab47bc;--green:#26a69a;--grey:#607d8b;
-  --ukraine:#4fc3f7;--sudan:#ff9800;--gaza:#ef5350;--myanmar:#ab47bc;--congo:#26a69a;--other:#607d8b;
 }
 *{margin:0;padding:0;box-sizing:border-box;}
 html,body{height:100%;overflow:hidden;}
 body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;font-size:14px;}
-
-/* ======= VIEWS ======= */
-.view{position:fixed;inset:0;overflow-y:auto;transition:opacity 0.35s,transform 0.35s;z-index:10;}
+.view{position:fixed;inset:0;overflow-y:auto;transition:opacity .35s,transform .35s;z-index:10;}
 .view.hidden{opacity:0;pointer-events:none;transform:translateX(40px);}
-
-/* ======= HEADER ======= */
-.hdr{
-  position:sticky;top:0;z-index:100;
-  background:rgba(7,9,13,0.92);backdrop-filter:blur(16px);
-  border-bottom:1px solid var(--border);
-  display:flex;align-items:center;justify-content:space-between;
-  padding:0 36px;height:58px;
-}
+.hdr{position:sticky;top:0;z-index:100;background:rgba(7,9,13,.92);backdrop-filter:blur(16px);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 36px;height:58px;}
 .logo{font-family:'Bebas Neue',sans-serif;font-size:26px;letter-spacing:5px;color:var(--bright);display:flex;align-items:center;gap:10px;}
 .logo-pulse{width:7px;height:7px;border-radius:50%;background:var(--accent);animation:pulse 1.6s infinite;}
 @keyframes pulse{0%,100%{opacity:1;transform:scale(1);}50%{opacity:.3;transform:scale(.6);}}
 .hdr-meta{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--dim);text-align:right;line-height:1.7;}
 .hdr-meta span{color:var(--accent3);}
-
-/* ======= HERO ======= */
-.hero{
-  padding:44px 36px 28px;
-  background:linear-gradient(140deg,#07090d 0%,#0a1018 60%,#080d14 100%);
-  border-bottom:1px solid var(--border);
-  position:relative;overflow:hidden;
-}
+.hero{padding:44px 36px 28px;background:linear-gradient(140deg,#07090d 0%,#0a1018 60%,#080d14 100%);border-bottom:1px solid var(--border);position:relative;overflow:hidden;}
 .hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 50% 100% at 75% 50%,rgba(230,57,70,.06),transparent 70%);}
 .hero-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(40px,5.5vw,72px);letter-spacing:2px;line-height:.92;color:var(--bright);margin-bottom:10px;}
 .hero-title em{color:var(--accent);font-style:normal;}
 .hero-sub{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--dim);letter-spacing:.5px;max-width:600px;}
-
-/* ======= STATS BAR ======= */
+/* Ticker */
+.ticker{background:#0a0d12;border-bottom:1px solid #ff4d4d33;padding:10px 36px;display:flex;align-items:center;gap:16px;overflow:hidden;}
+.ticker-label{font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:2px;color:#ff4d4d;padding:2px 7px;border:1px solid #ff4d4d44;border-radius:1px;white-space:nowrap;background:rgba(255,77,77,.08);}
+.ticker-track{overflow:hidden;flex:1;}
+.ticker-inner{display:inline-block;white-space:nowrap;animation:ticker 35s linear infinite;}
+.ticker-inner:hover{animation-play-state:paused;}
+@keyframes ticker{0%{transform:translateX(100%);}100%{transform:translateX(-100%);}}
+.ticker-text{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--text);letter-spacing:.5px;}
+.ticker-sep{color:#ff4d4d;margin:0 14px;}
+/* Global totals */
+.gtotals{display:grid;grid-template-columns:repeat(6,1fr);border-bottom:1px solid var(--border);}
+.gt{padding:18px 20px;border-right:1px solid var(--border);text-align:center;}
+.gt:last-child{border-right:none;}
+.gt-icon{font-size:20px;margin-bottom:6px;}
+.gt-lbl{font-family:'IBM Plex Mono',monospace;font-size:8px;letter-spacing:1.5px;color:var(--dim);margin-bottom:4px;text-transform:uppercase;}
+.gt-val{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:1px;color:var(--bright);}
+.gt-note{font-size:9px;color:var(--dim);margin-top:3px;line-height:1.4;}
+/* Stats bar */
 .sbar{display:grid;grid-template-columns:repeat(4,1fr);border-bottom:1px solid var(--border);}
 .sc{padding:22px 28px;border-right:1px solid var(--border);transition:background .25s;cursor:default;}
 .sc:last-child{border-right:none;}
@@ -61,24 +70,20 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;fon
 .sc:nth-child(2) .sc-val{color:var(--accent2);}
 .sc:nth-child(3) .sc-val{color:var(--accent4);}
 .sc:nth-child(4) .sc-val{color:var(--accent3);}
-
-/* ======= MAIN LAYOUT ======= */
+/* Main grid */
 .main{padding:28px 36px;display:grid;grid-template-columns:1fr 1fr;gap:20px;}
 .full{grid-column:1/-1;}
-
-/* ======= CARDS ======= */
 .card{background:var(--surface);border:1px solid var(--border);border-radius:3px;overflow:hidden;}
-.card-hdr{padding:13px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:10px;}
+.card-hdr{padding:13px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;}
 .card-title{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--bright);}
 .badge{font-family:'IBM Plex Mono',monospace;font-size:9px;padding:2px 7px;border-radius:1px;letter-spacing:.8px;}
 .b-live{background:rgba(230,57,70,.15);color:#ff7582;border:1px solid rgba(230,57,70,.3);}
 .b-src{background:rgba(46,196,182,.12);color:var(--accent3);border:1px solid rgba(46,196,182,.25);}
-
-/* ======= CONFLICT TABLE ======= */
+/* Conflict table */
 .ctable{border-collapse:collapse;width:100%;}
 .ctable th{font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--dim);padding:10px 18px;text-align:left;border-bottom:1px solid var(--border);}
 .ctable th:nth-child(n+3){text-align:right;}
-.ctable td{padding:13px 18px;border-bottom:1px solid var(--border)33;vertical-align:middle;}
+.ctable td{padding:13px 18px;border-bottom:1px solid var(--border);vertical-align:middle;}
 .ctable tr:last-child td{border-bottom:none;}
 .ctable tr.crow{cursor:pointer;transition:background .18s;}
 .ctable tr.crow:hover{background:var(--surface2);}
@@ -98,73 +103,43 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;fon
 .s-active{background:rgba(230,57,70,.13);color:#ff7582;border:1px solid rgba(230,57,70,.22);}
 .s-escl{background:rgba(244,162,97,.13);color:var(--accent2);border:1px solid rgba(244,162,97,.22);}
 .s-cf{background:rgba(233,196,106,.13);color:var(--accent4);border:1px solid rgba(233,196,106,.22);}
-
-/* ======= CHARTS ======= */
-.chart-wrap{padding:18px;position:relative;}
-.chart-box{position:relative;height:240px;}
-
-/* ======= NEWS SECTION ======= */
+/* Charts */
+.chart-wrap{padding:16px 18px;}
+.chart-box{height:200px;position:relative;}
+/* News section */
 .news-tab{font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:1.5px;padding:10px 18px;background:none;border:none;border-right:1px solid var(--border);border-bottom:2px solid transparent;cursor:pointer;color:var(--dim);transition:all .2s;white-space:nowrap;}
 .news-tab:hover{background:var(--surface2);color:var(--bright);}
 .news-tab.active{color:var(--bright);border-bottom-color:var(--accent3);background:var(--surface2);}
-.news-item{padding:16px 18px;border-bottom:1px solid var(--border)22;border-right:1px solid var(--border)22;transition:background .18s;cursor:default;}
+.news-item{padding:16px 18px;border-bottom:1px solid var(--border)22;border-right:1px solid var(--border)22;transition:background .18s;}
 .news-item:hover{background:var(--surface2);}
 .news-meta{display:flex;align-items:center;gap:8px;margin-bottom:8px;flex-wrap:wrap;}
-.news-conflict-tag{font-family:'IBM Plex Mono',monospace;font-size:8px;padding:2px 6px;border-radius:1px;letter-spacing:1px;border:1px solid;opacity:.9;}
+.news-conflict-tag{font-family:'IBM Plex Mono',monospace;font-size:8px;padding:2px 6px;border-radius:1px;letter-spacing:1px;border:1px solid;}
 .news-time{font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--dim);}
 .news-source{font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--accent3);}
 .news-headline{font-size:12px;font-weight:600;color:var(--bright);line-height:1.45;margin-bottom:6px;}
 .news-body{font-size:11px;color:var(--dim);line-height:1.65;}
 .news-item.breaking{background:rgba(255,77,77,.04);border-left:2px solid #ff4d4d;}
-
-#detail-view{background:var(--bg);}
-.back-btn{
-  display:inline-flex;align-items:center;gap:8px;
-  font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:1px;
-  color:var(--accent3);cursor:pointer;padding:10px 0;
-  transition:opacity .2s;border:none;background:none;
-}
-.back-btn:hover{opacity:.7;}
-.detail-hero{
-  padding:40px 36px 28px;
-  border-bottom:1px solid var(--border);
-  position:relative;overflow:hidden;
-}
-.detail-hero::before{content:'';position:absolute;inset:0;pointer-events:none;}
-.detail-flag{font-size:48px;margin-bottom:12px;}
-.detail-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(36px,5vw,64px);letter-spacing:2px;line-height:.92;color:var(--bright);margin-bottom:8px;}
-.detail-subtitle{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--dim);letter-spacing:.5px;}
-.detail-tags{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px;}
-.tag{font-family:'IBM Plex Mono',monospace;font-size:9px;padding:3px 8px;border-radius:1px;letter-spacing:1px;border:1px solid;opacity:.9;}
-
-.detail-grid{padding:24px 36px;display:grid;grid-template-columns:1fr 1fr;gap:18px;}
+@keyframes shimmer{0%,100%{opacity:.3;}50%{opacity:.7;}}
+/* Detail view */
+.detail-hero{padding:32px 36px 24px;background:linear-gradient(140deg,#07090d,#0a1018);border-bottom:1px solid var(--border);}
+.detail-grid{padding:28px 36px;display:grid;grid-template-columns:1fr 1fr;gap:20px;}
 .detail-full{grid-column:1/-1;}
-
-/* Section headings inside detail */
-.sec-head{font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:2.5px;text-transform:uppercase;color:var(--dim);margin-bottom:14px;padding-bottom:8px;border-bottom:1px solid var(--border);}
-
-/* Casualties panel */
+.detail-section-hdr{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:2px;color:var(--accent3);margin-bottom:16px;padding-bottom:8px;border-bottom:1px solid var(--border);}
+.tag{font-family:'IBM Plex Mono',monospace;font-size:9px;padding:3px 8px;border-radius:1px;border:1px solid;margin-right:6px;margin-bottom:4px;display:inline-block;letter-spacing:.5px;}
 .cas-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border);}
-.cas-cell{background:var(--surface);padding:18px 16px;}
-.cas-lbl{font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--dim);margin-bottom:6px;}
-.cas-val{font-family:'Bebas Neue',sans-serif;font-size:32px;letter-spacing:1px;line-height:1;margin-bottom:3px;}
-.cas-src{font-size:10px;color:var(--dim);}
-
-/* Geo/repercussions items */
-.item-list{display:flex;flex-direction:column;gap:12px;padding:18px;}
+.cas-cell{background:var(--surface);padding:14px 16px;}
+.cas-label{font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--dim);margin-bottom:6px;letter-spacing:1px;}
+.cas-val{font-family:'Bebas Neue',sans-serif;font-size:24px;color:var(--bright);margin-bottom:2px;}
+.cas-src{font-size:9px;color:var(--dim);}
+.items-panel{padding:18px;display:flex;flex-direction:column;gap:12px;}
 .item{display:flex;align-items:flex-start;gap:12px;}
 .item-icon{font-size:18px;flex-shrink:0;margin-top:1px;}
-.item-body{}
 .item-title{font-weight:600;font-size:12px;color:var(--bright);margin-bottom:2px;}
 .item-desc{font-size:11px;color:var(--dim);line-height:1.65;}
-
-/* Cost of war */
 .cost-row{display:flex;align-items:center;justify-content:space-between;padding:11px 18px;border-bottom:1px solid var(--border)33;}
 .cost-row:last-child{border-bottom:none;}
 .cost-label{font-size:12px;color:var(--text);}
 .cost-val{font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:500;color:var(--accent2);}
-
-/* Market panel */
 .market-panel{padding:18px;}
 .mkt-intro{font-size:11px;color:var(--dim);margin-bottom:14px;line-height:1.7;padding:12px;background:var(--surface2);border:1px solid var(--border);border-radius:2px;}
 .mkt-row{display:grid;grid-template-columns:40px 1fr auto auto;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--border)22;}
@@ -173,36 +148,27 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;fon
 .mkt-name{font-size:12px;color:var(--bright);font-weight:500;}
 .mkt-sub{font-size:10px;color:var(--dim);}
 .mkt-trend{font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:500;}
-.up{color:#4caf50;}
-.dn{color:#ef5350;}
-.neut{color:var(--accent4);}
-.mkt-note{font-size:10px;color:var(--dim);text-align:right;max-width:140px;line-height:1.4;}
-.mkt-disclaimer{margin-top:14px;padding:10px;background:rgba(233,196,106,.06);border:1px solid rgba(233,196,106,.2);border-radius:2px;font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--dim);line-height:1.7;letter-spacing:.3px;}
-
-/* Scrollbar */
-::-webkit-scrollbar{width:4px;height:4px;}
-::-webkit-scrollbar-track{background:transparent;}
-::-webkit-scrollbar-thumb{background:var(--border2);}
-
-/* Responsive */
+.mkt-note{font-size:10px;color:var(--dim);text-align:right;}
+.back-btn{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:1.5px;padding:8px 16px;background:none;border:1px solid var(--border2);color:var(--accent3);cursor:pointer;border-radius:1px;transition:all .2s;}
+.back-btn:hover{background:var(--surface2);}
+.mkt-disclaimer{font-size:9px;color:var(--dim);margin-top:14px;padding:10px;background:rgba(233,196,106,.05);border:1px solid rgba(233,196,106,.15);border-radius:1px;line-height:1.6;}
 @media(max-width:900px){
-  .sbar{grid-template-columns:1fr 1fr;}
+  .sbar,.gtotals{grid-template-columns:1fr 1fr;}
   .main,.detail-grid{grid-template-columns:1fr;padding:16px;}
   .full,.detail-full{grid-column:1;}
   .hdr,.hero,.detail-hero{padding-left:16px;padding-right:16px;}
   .ctable th:nth-child(4),.ctable td:nth-child(4){display:none;}
   .cas-grid{grid-template-columns:1fr 1fr;}
 }
-@keyframes shimmer{0%,100%{opacity:.3;}50%{opacity:.7;}}
 </style>
 </head>
 <body>
 
-<!-- ==================== HOME VIEW ==================== -->
+<!-- HOME VIEW -->
 <div class="view" id="home-view">
   <header class="hdr">
-    <div class="logo"><div class="logo-pulse"></div>WARWATCH</div>
-    <div class="hdr-meta">UPDATED: <span>MARCH 2026</span> | SOURCES: <span>UN·OHCHR·ACLED·BBC·ISW·MoH</span></div>
+    <div class="logo"><div class="logo-pulse"></div>CONFLICTDASH</div>
+    <div class="hdr-meta">UPDATED: <span>MARCH 2026</span> | SOURCES: <span>UN · OHCHR · ACLED · BBC · ISW · MoH</span></div>
   </header>
 
   <div class="hero">
@@ -210,94 +176,51 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;fon
     <p class="hero-sub">// TRACKING ONGOING ARMED CONFLICTS — VERIFIED CASUALTIES, GEOPOLITICS, COSTS & MARKET IMPACT // CLICK ANY CONFLICT TO DEEP-DIVE</p>
   </div>
 
-  <!-- BREAKING NEWS TICKER -->
-  <div style="background:#1a0a0a;border-bottom:1px solid #ff4d4d44;padding:10px 36px;display:flex;align-items:center;gap:16px;overflow:hidden;">
-    <span style="font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:2px;color:#ff4d4d;background:rgba(255,77,77,.15);border:1px solid rgba(255,77,77,.3);padding:3px 8px;white-space:nowrap;flex-shrink:0;">● BREAKING</span>
-    <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#c9a0a0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
-      US-ISRAEL STRIKES ON IRAN — DAY 3 — KHAMENEI KILLED — 555+ DEAD IN IRAN — 3 US TROOPS KIA — QATAR AIRSPACE CLOSED — SAUDI ARAMCO REFINERY ATTACKED — HORMUZ THREAT — EUR GAS +42% — GULF MARKETS CLOSED — TRUMP: "OPERATION CONTINUES 4 WEEKS OR LESS"
+  <div class="ticker">
+    <span class="ticker-label">● BREAKING</span>
+    <div class="ticker-track">
+      <div class="ticker-inner">
+        <span class="ticker-text">US-ISRAEL STRIKES ON IRAN — DAY 3<span class="ticker-sep">·</span>KHAMENEI KILLED<span class="ticker-sep">·</span>555+ DEAD IN IRAN<span class="ticker-sep">·</span>3 US TROOPS KIA<span class="ticker-sep">·</span>QATAR AIRSPACE CLOSED<span class="ticker-sep">·</span>SAUDI ARAMCO REFINERY ATTACKED<span class="ticker-sep">·</span>HORMUZ THREAT<span class="ticker-sep">·</span>EUR GAS +42%<span class="ticker-sep">·</span>GULF MARKETS CLOSED<span class="ticker-sep">·</span>TRUMP: "OPERATION CONTINUES 4 WEEKS OR LESS"</span>
+      </div>
     </div>
-    <span style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:#ff4d4d;white-space:nowrap;flex-shrink:0;margin-left:auto;">MAR 3 2026</span>
   </div>
 
-  <!-- GLOBAL TOTALS PANEL -->
-  <div style="background:linear-gradient(90deg,#0d0608 0%,#080d10 50%,#060a0d 100%);border-bottom:1px solid var(--border);padding:0;">
-    <div style="padding:10px 36px 6px;font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:2.5px;text-transform:uppercase;color:var(--dim);">// GLOBAL CUMULATIVE TOTALS — ALL ACTIVE CONFLICTS COMBINED — AS OF MARCH 2026</div>
-    <div style="display:grid;grid-template-columns:repeat(6,1fr);border-top:1px solid var(--border);">
-      <div style="padding:18px 22px;border-right:1px solid var(--border);background:rgba(230,57,70,.04);">
-        <div style="font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:#ff7070;margin-bottom:6px;">☠ TOTAL KILLED</div>
-        <div style="font-family:'Bebas Neue',sans-serif;font-size:42px;color:#ff4d4d;line-height:1;margin-bottom:3px;">~500K+</div>
-        <div style="font-size:10px;color:var(--dim);line-height:1.5;">Across all active conflicts<br>Verified + modelled estimates</div>
-      </div>
-      <div style="padding:18px 22px;border-right:1px solid var(--border);background:rgba(244,162,97,.03);">
-        <div style="font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:#f4a261;margin-bottom:6px;">🩸 TOTAL WOUNDED / INJURED</div>
-        <div style="font-family:'Bebas Neue',sans-serif;font-size:42px;color:#f4a261;line-height:1;margin-bottom:3px;">~1.5M+</div>
-        <div style="font-size:10px;color:var(--dim);line-height:1.5;">Combat + civilian injuries<br>Chronic underreporting likely</div>
-      </div>
-      <div style="padding:18px 22px;border-right:1px solid var(--border);background:rgba(233,196,106,.02);">
-        <div style="font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:#e9c46a;margin-bottom:6px;">👶 CHILDREN KILLED</div>
-        <div style="font-family:'Bebas Neue',sans-serif;font-size:42px;color:#e9c46a;line-height:1;margin-bottom:3px;">50K+</div>
-        <div style="font-size:10px;color:var(--dim);line-height:1.5;">Gaza: 21K+ · Sudan: 15K+ est.<br>Ukraine: 600+ verified (OHCHR)</div>
-      </div>
-      <div style="padding:18px 22px;border-right:1px solid var(--border);background:rgba(46,196,182,.02);">
-        <div style="font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:#2ec4b6;margin-bottom:6px;">🏚 PEOPLE DISPLACED</div>
-        <div style="font-family:'Bebas Neue',sans-serif;font-size:42px;color:#2ec4b6;line-height:1;margin-bottom:3px;">122M+</div>
-        <div style="font-size:10px;color:var(--dim);line-height:1.5;">UNHCR 2025 — all-time record<br>Sudan · Ukraine · Gaza · DRC</div>
-      </div>
-      <div style="padding:18px 22px;border-right:1px solid var(--border);background:rgba(171,71,188,.02);">
-        <div style="font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:#ab47bc;margin-bottom:6px;">🌾 FACING FAMINE</div>
-        <div style="font-family:'Bebas Neue',sans-serif;font-size:42px;color:#ab47bc;line-height:1;margin-bottom:3px;">281M</div>
-        <div style="font-size:10px;color:var(--dim);line-height:1.5;">Acute food insecurity globally<br>Sudan · Gaza · Yemen · DRC</div>
-      </div>
-      <div style="padding:18px 22px;background:rgba(96,125,139,.02);">
-        <div style="font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:#90a4ae;margin-bottom:6px;">🏥 HOSPITALS ATTACKED</div>
-        <div style="font-family:'Bebas Neue',sans-serif;font-size:42px;color:#90a4ae;line-height:1;margin-bottom:3px;">900+</div>
-        <div style="font-size:10px;color:var(--dim);line-height:1.5;">Gaza · Sudan · Ukraine · Myanmar<br>WHO Surveillance of Attacks 2025</div>
-      </div>
-    </div>
-    <!-- Per-conflict killed + injured mini table -->
-    <div style="border-top:1px solid var(--border);padding:14px 36px 16px;">
-      <div style="font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:2px;color:var(--dim);margin-bottom:10px;">PER-CONFLICT BREAKDOWN:</div>
-      <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:8px;" id="perConflictTotals"></div>
-    </div>
+  <div class="gtotals">
+    <div class="gt"><div class="gt-icon">☠</div><div class="gt-lbl">Total Killed</div><div class="gt-val" style="color:var(--accent)">~500K+</div><div class="gt-note">All active conflicts combined</div></div>
+    <div class="gt"><div class="gt-icon">🩸</div><div class="gt-lbl">Total Wounded</div><div class="gt-val" style="color:var(--accent2)">~1.5M+</div><div class="gt-note">Combat + civilian injuries</div></div>
+    <div class="gt"><div class="gt-icon">👶</div><div class="gt-lbl">Children Killed</div><div class="gt-val" style="color:#ff9800">50K+</div><div class="gt-note">Gaza 21K+ · Sudan 15K+ est.</div></div>
+    <div class="gt"><div class="gt-icon">🏚</div><div class="gt-lbl">Displaced</div><div class="gt-val" style="color:var(--accent4)">122M+</div><div class="gt-note">UNHCR 2025 — all-time record</div></div>
+    <div class="gt"><div class="gt-icon">🌾</div><div class="gt-lbl">Facing Famine</div><div class="gt-val" style="color:#ef5350">281M</div><div class="gt-note">Acute food insecurity globally</div></div>
+    <div class="gt"><div class="gt-icon">🏥</div><div class="gt-lbl">Hospitals Attacked</div><div class="gt-val" style="color:var(--accent3)">900+</div><div class="gt-note">WHO Surveillance 2025</div></div>
   </div>
 
   <div class="sbar">
-    <div class="sc"><div class="sc-lbl">// 🔴 BREAKING — Killed in Iran (US-Israel Strikes)</div><div class="sc-val">555+</div><div class="sc-note">Iranian Red Crescent — 130+ cities hit, Mar 2–3 2026</div></div>
-    <div class="sc"><div class="sc-lbl">// European Nat. Gas Futures Spike</div><div class="sc-val">+42%</div><div class="sc-note">Hormuz threat; Ras Tanura refinery struck — PBS/CBS Mar 2026</div></div>
-    <div class="sc"><div class="sc-lbl">// Khamenei Killed — Leadership Vacuum</div><div class="sc-val">3-PERSON</div><div class="sc-note">Temp. council formed; new supreme leader TBD — CBS Mar 2026</div></div>
-    <div class="sc"><div class="sc-lbl">// US Troops KIA (Operation Epic Fury)</div><div class="sc-val">3 KIA</div><div class="sc-note">Pentagon confirmed; Trump says "likely more" — NPR Mar 1 2026</div></div>
+    <div class="sc"><div class="sc-lbl">// 🔴 BREAKING — Killed in Iran</div><div class="sc-val">555+</div><div class="sc-note">Iranian Red Crescent — 130+ cities hit, Mar 2-3 2026</div></div>
+    <div class="sc"><div class="sc-lbl">// European Nat. Gas Futures</div><div class="sc-val">+42%</div><div class="sc-note">Hormuz threat; Ras Tanura refinery struck</div></div>
+    <div class="sc"><div class="sc-lbl">// Khamenei Killed — Leadership</div><div class="sc-val">3-PERSON</div><div class="sc-note">Temp. council formed — CBS Mar 2026</div></div>
+    <div class="sc"><div class="sc-lbl">// US Troops KIA (Epic Fury)</div><div class="sc-val">3 KIA</div><div class="sc-note">Pentagon confirmed — NPR Mar 1 2026</div></div>
   </div>
 
   <div class="main">
-    <!-- Conflict Table -->
     <div class="card full">
       <div class="card-hdr">
         <span class="card-title">// ACTIVE CONFLICTS — RANKED BY CASUALTIES (CLICK TO EXPLORE)</span>
         <span class="badge b-live">● LIVE</span>
       </div>
       <table class="ctable" id="conflictTable">
-        <thead>
-          <tr>
-            <th style="width:32px">#</th>
-            <th>Conflict</th>
-            <th>Scale</th>
-            <th>☠ Killed</th>
-            <th>🩸 Injured</th>
-            <th>Verified By</th>
-            <th>Status</th>
-          </tr>
-        </thead>
+        <thead><tr>
+          <th>#</th><th>Conflict</th><th>Scale</th>
+          <th>☠ Killed</th><th>🩸 Injured</th><th>Verified By</th><th>Status</th>
+        </tr></thead>
         <tbody id="conflictBody"></tbody>
       </table>
     </div>
 
-    <!-- Donut Chart -->
     <div class="card">
-      <div class="card-hdr"><span class="card-title">// Share of Total Deaths</span><span class="badge b-src">2025–26</span></div>
+      <div class="card-hdr"><span class="card-title">// Share of Total Deaths</span><span class="badge b-src">2025-26</span></div>
       <div class="chart-wrap"><div class="chart-box"><canvas id="donutChart"></canvas></div></div>
     </div>
 
-    <!-- Bar Chart -->
     <div class="card">
       <div class="card-hdr"><span class="card-title">// Civilian vs Military Deaths</span><span class="badge b-src">VERIFIED DATA</span></div>
       <div class="chart-wrap"><div class="chart-box"><canvas id="barChart"></canvas></div></div>
@@ -306,894 +229,558 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;fon
     <!-- NEWS SECTION -->
     <div class="card full" id="newsCard">
       <div class="card-hdr">
-        <span class="card-title">// LATEST NEWS — ALL CONFLICTS — AI-POWERED LIVE FEED</span>
+        <span class="card-title">// LATEST NEWS — ALL CONFLICTS — LIVE</span>
         <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
-          <span id="newsBadge" class="badge b-live">⟳ LOADING…</span>
+          <span id="newsBadge" class="badge b-src">● READY</span>
           <span id="newsLastUpdated" style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--dim);"></span>
           <span id="newsCountdown" style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--dim);"></span>
-          <button onclick="fetchLiveNews()" title="Refresh now" style="font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:1px;padding:3px 10px;background:none;border:1px solid var(--border2);color:var(--accent3);cursor:pointer;border-radius:1px;transition:all .2s;" onmouseover="this.style.background='var(--surface2)'" onmouseout="this.style.background='none'">↻ REFRESH</button>
+          <button onclick="manualRefresh()" style="font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:1px;padding:3px 10px;background:none;border:1px solid var(--border2);color:var(--accent3);cursor:pointer;border-radius:1px;">↻ REFRESH</button>
         </div>
       </div>
-      <!-- Filter tabs -->
       <div style="display:flex;gap:0;border-bottom:1px solid var(--border);overflow-x:auto;">
-        <button class="news-tab active" data-filter="all" onclick="filterNews('all',this)">ALL</button>
-        <button class="news-tab" data-filter="iran" onclick="filterNews('iran',this)" style="color:#ff4d4d;">🔴 US–IRAN</button>
-        <button class="news-tab" data-filter="ukraine" onclick="filterNews('ukraine',this)" style="color:#4fc3f7;">🇺🇦 UKRAINE</button>
-        <button class="news-tab" data-filter="gaza" onclick="filterNews('gaza',this)" style="color:#ef5350;">🇵🇸 GAZA</button>
-        <button class="news-tab" data-filter="sudan" onclick="filterNews('sudan',this)" style="color:#ff9800;">🇸🇩 SUDAN</button>
-        <button class="news-tab" data-filter="stances" onclick="filterNews('stances',this)" style="color:#2ec4b6;">🌐 COUNTRY STANCES</button>
+        <button class="news-tab active" onclick="filterNews('all',this)">ALL</button>
+        <button class="news-tab" onclick="filterNews('iran',this)" style="color:#ff4d4d;">🔴 US-IRAN</button>
+        <button class="news-tab" onclick="filterNews('ukraine',this)" style="color:#4fc3f7;">🇺🇦 UKRAINE</button>
+        <button class="news-tab" onclick="filterNews('gaza',this)" style="color:#ef5350;">🇵🇸 GAZA</button>
+        <button class="news-tab" onclick="filterNews('sudan',this)" style="color:#ff9800;">🇸🇩 SUDAN</button>
+        <button class="news-tab" onclick="filterNews('myanmar',this)" style="color:#ab47bc;">🇲🇲 MYANMAR</button>
+        <button class="news-tab" onclick="filterNews('stances',this)" style="color:#2ec4b6;">🌐 WORLD VIEWS</button>
       </div>
       <div id="newsGrid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:0;"></div>
     </div>
   </div>
-</div><!-- /home-view -->
+</div>
 
-
-<!-- ==================== DETAIL VIEW ==================== -->
+<!-- DETAIL VIEW -->
 <div class="view hidden" id="detail-view">
   <header class="hdr">
-    <div class="logo"><div class="logo-pulse"></div>WARWATCH</div>
+    <div class="logo"><div class="logo-pulse"></div>CONFLICTDASH</div>
     <div class="hdr-meta">CONFLICT DEEP-DIVE</div>
   </header>
   <div id="detail-content"></div>
 </div>
 
-
 <script>
-/* ===================== DATA ===================== */
-const conflicts = [
+document.addEventListener('DOMContentLoaded', function() {
+
+/* ===================== CONFLICT DATA ===================== */
+var conflicts = [
   {
-    id:"iran",
-    name:"US–Israel vs Iran War",
-    flag:"🇮🇷",
-    color:"#ff4d4d",
-    startYear:2026,
-    status:"ACTIVE NOW",sClass:"s-active",
-    totalDeaths:"555+ Iran / 11 Israel / 4 US",
-    killed:"570+",
-    injured:"1,200+ est.",
-    totalNum:600,
-    pct:100,
-    source:"Iranian Red Crescent / PBS / NPR — Mar 1–2, 2026",
+    id:'iran', name:'US-Israel vs Iran War', flag:'🇮🇷', color:'#ff4d4d',
+    startYear:2026, status:'ACTIVE NOW', sClass:'s-active',
+    killed:'570+', injured:'1,200+ est.', totalNum:600, pct:100,
+    source:'Iranian Red Crescent / PBS / NPR',
     tags:[
-      {label:"🔴 BREAKING — MARCH 2026",color:"#ff4d4d"},
-      {label:"KHAMENEI KILLED",color:"#ff9800"},
-      {label:"NUCLEAR SITES STRUCK",color:"#ab47bc"},
-      {label:"STRAIT OF HORMUZ RISK",color:"#ef5350"},
+      {label:'🔴 BREAKING — MARCH 2026',color:'#ff4d4d'},
+      {label:'KHAMENEI KILLED',color:'#ff9800'},
+      {label:'NUCLEAR SITES STRUCK',color:'#ab47bc'},
+      {label:'STRAIT OF HORMUZ RISK',color:'#ef5350'},
     ],
-    casualties:{
-      rows:[
-        {label:"Killed in Iran (US-Israeli strikes)",val:"555+ confirmed (130+ cities hit)",src:"Iranian Red Crescent Society, Mar 2 2026 — PBS Newshour"},
-        {label:"Killed in Israel (Iranian missile strikes)",val:"11 confirmed (incl. 8 in Beit Shemesh)",src:"Magen David Adom / CBS News, Mar 1–2 2026"},
-        {label:"US Service Members Killed",val:"3 KIA, 5+ seriously wounded",src:"Pentagon confirmed — NPR / CBS News Mar 1 2026"},
-        {label:"Killed in Lebanon (Israeli strikes)",val:"31+ killed, 149+ wounded",src:"Lebanese Health Ministry — Al Jazeera Mar 2026"},
-        {label:"Killed in Gulf states (Iranian strikes)",val:"5 foreign nationals",src:"Al Jazeera / PBS, Mar 2 2026"},
-        {label:"168 girls killed — Minab school strike",val:"Elementary school hit in Iran",src:"Human Rights Activists News Agency / NPR Mar 1 2026"},
-        {label:"US warplanes downed in Kuwait",val:"3 F-15E Strike Eagles (friendly fire by Kuwait)",src:"PBS Newshour, Mar 2 2026"},
-        {label:"CONTEXT: June 2025 Twelve-Day War (prior round)",val:"1,190 killed in Iran; 28 killed in Israel",src:"HRANA / Wikipedia — Casualties of Twelve-Day War"},
-      ]
-    },
+    casualties:{rows:[
+      {label:'Killed in Iran (US-Israeli strikes)',val:'555+ confirmed (130+ cities hit)',src:'Iranian Red Crescent, Mar 2 2026'},
+      {label:'Killed in Israel (Iranian missile strikes)',val:'11 confirmed',src:'Magen David Adom / CBS News'},
+      {label:'US Service Members Killed',val:'3 KIA, 5+ seriously wounded',src:'Pentagon — NPR / CBS News Mar 1 2026'},
+      {label:'Killed in Lebanon (Israeli strikes)',val:'31+ killed, 149+ wounded',src:'Lebanese Health Ministry — Al Jazeera'},
+      {label:'168 girls killed — Minab school strike',val:'Elementary school hit in Iran',src:'HRANA / NPR Mar 1 2026'},
+    ]},
     geopolitics:[
-      {icon:"💣",title:"Operation 'Epic Fury' — Feb 28, 2026",desc:"US and Israel launched coordinated strikes on Iran starting Feb 28, 2026 (dubbed 'Epic Fury'). Israel struck 100+ targets including Natanz and nuclear facilities using 200+ jets in 5 waves. US cyber operations pre-disabled Iranian air defenses and communications."},
-      {icon:"☠️",title:"Supreme Leader Khamenei Killed",desc:"Ayatollah Ali Khamenei, Iran's supreme leader of 35 years, was killed in strikes on his compound in Tehran on March 1, 2026. CIA intelligence shared with Israel enabled the strike. Iran declared 40 days of mourning. A 3-person temporary leadership council was formed."},
-      {icon:"⚛️",title:"Nuclear Sites Destroyed",desc:"The US bombed Natanz, Fordow, and Isfahan nuclear facilities on June 22, 2025 (prior round) using bunker-busters. Trump claimed Iran's nuclear program was 'neutralised.' IAEA had confirmed Iran had enriched uranium for 9 warheads before the strikes."},
-      {icon:"🌍",title:"Regional War Expanding",desc:"Iran retaliated against US bases across 9 countries: Bahrain, Iraq, Jordan, Kuwait, Oman, Qatar, Saudi Arabia, UAE, and a UK base in Cyprus. Saudi Arabia's Ras Tanura refinery was struck. Qatar's Al Udeid base (40,000–50,000 US troops) hit by 2 ballistic missiles."},
-      {icon:"🇺🇸",title:"Trump's Stated Objectives",desc:"Trump said the operation will last '4 weeks or less' and continue 'until all objectives are achieved.' He said Iran's new potential leadership has signalled willingness to talk. Senate Republicans broadly supported the strikes."},
-      {icon:"🕊️",title:"Diplomacy On Hold",desc:"Omani FM said 'the door to diplomacy remains open.' Geneva nuclear talks had been making progress before war. Oman had been key mediator. Iran's new leadership may seek talks to avoid regime collapse."},
+      {icon:'💣',title:'Operation Epic Fury — Feb 28, 2026',desc:'US and Israel launched coordinated strikes on Iran starting Feb 28, 2026. Israel struck 100+ targets including Natanz and nuclear facilities using 200+ jets. US cyber operations pre-disabled Iranian air defenses and communications.'},
+      {icon:'☠️',title:'Supreme Leader Khamenei Killed',desc:'Ayatollah Ali Khamenei was killed in strikes on his compound in Tehran on March 1, 2026. CIA intelligence shared with Israel enabled the strike. Iran declared 40 days of mourning. A 3-person temporary leadership council was formed.'},
+      {icon:'⚛️',title:'Nuclear Sites Destroyed',desc:'US bombed Natanz, Fordow, and Isfahan nuclear facilities in June 2025 using bunker-busters. IAEA had confirmed Iran enriched uranium for 9 warheads before the strikes.'},
+      {icon:'🌍',title:'Regional War Expanding',desc:'Iran retaliated against US bases across 9 countries: Bahrain, Iraq, Jordan, Kuwait, Oman, Qatar, Saudi Arabia, UAE, and a UK base in Cyprus. Saudi Arabia Ras Tanura refinery struck. Qatar Al Udeid base (40,000+ US troops) hit.'},
+      {icon:'🇺🇸',title:'Trump Stated Objectives',desc:'Trump said the operation will last 4 weeks or less. He said Iran new leadership has signalled willingness to talk. Senate Republicans broadly supported the strikes.'},
+      {icon:'🕊️',title:'Diplomacy',desc:'Oman FM said the door to diplomacy remains open. Iran new leadership may seek talks to avoid regime collapse.'},
     ],
     repercussions:[
-      {icon:"🛢️",title:"Oil Market Shock",desc:"The Strait of Hormuz — through which 20% of global oil trade passes — is now under direct threat. Saudi Aramco's Ras Tanura refinery (500,000+ bbl/day capacity) shut down after Iranian drone strike. European natural gas futures spiked 42%."},
-      {icon:"✈️",title:"Global Aviation Crisis",desc:"Qatar suspended all air navigation and Qatar Airways grounded all flights. Multiple Gulf airports disrupted. The UAE ordered schools to remote learning. Global aviation rerouting began."},
-      {icon:"📉",title:"Market Panic Expected",desc:"UAE markets (ADX and DFM) closed Monday and Tuesday after attacks. Analysts expect risk-off trades: safe havens (gold, USD) surge; equities, shipping, and oil-sensitive sectors in turmoil."},
-      {icon:"🇮🇷",title:"Iranian Regime Collapse Risk",desc:"With Khamenei dead, Iran's leadership is in an unprecedented transition. 'Secessionist groups' have been warned. Analysts say Iran's nuclear and missile infrastructure is heavily degraded, its economy further weakened."},
-      {icon:"🌐",title:"NATO & Allied Escalation Risk",desc:"A British RAF base in Cyprus was struck by an Iranian drone. Greek F-16s and frigates deployed to Cyprus. Any NATO Article 5 trigger or expansion to Hezbollah/Houthi escalation could draw in additional major powers."},
-      {icon:"🤖",title:"First Major Cyberwar Precursor",desc:"US cyber operations knocked out Iran's key systems — communications, air defense coordination — before the first missile fell. This marks a new doctrine: digital decapitation before kinetic strikes."},
+      {icon:'🛢️',title:'Oil Market Shock',desc:'The Strait of Hormuz — through which 20% of global oil trade passes — is under direct threat. Saudi Aramco Ras Tanura refinery shut down. European natural gas futures spiked 42%.'},
+      {icon:'✈️',title:'Global Aviation Crisis',desc:'Qatar suspended all air navigation and Qatar Airways grounded all flights. Multiple Gulf airports disrupted. UAE ordered schools to remote learning.'},
+      {icon:'🇮🇷',title:'Iranian Regime Collapse Risk',desc:'With Khamenei dead, Iran leadership is in an unprecedented transition. Iran nuclear and missile infrastructure is heavily degraded, its economy further weakened.'},
+      {icon:'🌐',title:'NATO and Allied Escalation Risk',desc:'A British RAF base in Cyprus was struck by an Iranian drone. Any NATO Article 5 trigger could draw in additional major powers.'},
     ],
-    cost:{
-      rows:[
-        {label:"June 2025 Twelve-Day War — Total estimated damage (Iran)",val:"$50B+ infrastructure"},
-        {label:"Saudi Ras Tanura refinery disruption (500K bbl/day)",val:"$2–5B/day risk"},
-        {label:"European gas futures spike",val:"+42% (PBS/CBS Mar 2 2026)"},
-        {label:"Global oil risk premium (Hormuz threat)",val:"+$15–30/bbl estimated"},
-        {label:"Qatar Airways/Gulf aviation losses",val:"$500M+ daily (estimates)"},
-        {label:"US military operational cost (per week)",val:"$2–4B estimated (Gulf War precedent)"},
-        {label:"UAE/Gulf market closures (ADX/DFM)",val:"$400B+ market cap at risk"},
-      ]
-    },
+    cost:{rows:[
+      {label:'Saudi Ras Tanura refinery disruption (500K bbl/day)',val:'$2-5B/day risk'},
+      {label:'European gas futures spike',val:'+42% (Mar 2 2026)'},
+      {label:'Global oil risk premium (Hormuz threat)',val:'+$15-30/bbl estimated'},
+      {label:'Qatar Airways and Gulf aviation losses',val:'$500M+ daily'},
+      {label:'UAE and Gulf market closures (ADX/DFM)',val:'$400B+ market cap at risk'},
+    ]},
     market:{
-      intro:"THIS IS AN ACTIVELY UNFOLDING CONFLICT as of March 2–3, 2026. Markets have not fully opened. Analysts expect extreme volatility. The Strait of Hormuz is the single biggest risk variable.",
+      intro:'ACTIVELY UNFOLDING as of March 2-3, 2026. Markets have not fully opened. Analysts expect extreme volatility. The Strait of Hormuz is the single biggest risk variable.',
       rows:[
-        {icon:"🛢️",name:"Brent Crude Oil",sub:"Strait of Hormuz = 20% of global oil",trend:"▲▲ EXTREME SPIKE",dir:"up",note:"Hormuz closure = +$40–80/bbl shock"},
-        {icon:"⛽",name:"European Nat. Gas (TTF)",sub:"Already spiked 42% Mon 3 Mar",trend:"▲▲ SURGING",dir:"up",note:"Middle East LNG supply at risk"},
-        {icon:"🥇",name:"Gold (XAU/USD)",sub:"Ultimate safe haven",trend:"▲▲ STRONG BUY",dir:"up",note:"Geopolitical max-fear = gold surge"},
-        {icon:"💵",name:"US Dollar (DXY)",sub:"Safe haven currency",trend:"▲ STRONG",dir:"up",note:"Risk-off flows into USD"},
-        {icon:"🛡️",name:"Defence Stocks (RTX, LMT, NOC)",sub:"Raytheon, Lockheed, Northrop",trend:"▲▲ SURGE",dir:"up",note:"Direct US military engagement = contracts"},
-        {icon:"📉",name:"Global Equities (S&P 500, DAX)",sub:"Risk-off broad selloff",trend:"▼▼ SELLOFF",dir:"dn",note:"War shock + oil spike = stagflation fear"},
-        {icon:"📉",name:"Airlines (UAE, Gulf carriers)",sub:"Qatar Airways grounded",trend:"▼▼ HALTED",dir:"dn",note:"Gulf airspace closed; routes disrupted"},
-        {icon:"📉",name:"Gulf Markets (ADX, DFM, Tadawul)",sub:"UAE and Saudi markets",trend:"▼▼ CLOSED/RISK",dir:"dn",note:"ADX/DFM closed Mon–Tue; Aramco hit"},
+        {icon:'🛢️',name:'Brent Crude Oil',sub:'Hormuz = 20% of global oil',trend:'▲▲ EXTREME SPIKE',dir:'up',note:'Hormuz closure = +$40-80/bbl shock'},
+        {icon:'⛽',name:'European Gas (TTF)',sub:'Already spiked 42%',trend:'▲▲ SURGING',dir:'up',note:'Middle East LNG supply at risk'},
+        {icon:'🥇',name:'Gold (XAU/USD)',sub:'Safe haven',trend:'▲▲ STRONG BUY',dir:'up',note:'Geopolitical max-fear = gold surge'},
+        {icon:'🛡️',name:'Defence Stocks (RTX, LMT)',sub:'Raytheon, Lockheed',trend:'▲▲ SURGE',dir:'up',note:'Direct US military engagement = contracts'},
+        {icon:'📉',name:'Global Equities',sub:'S&P 500, DAX',trend:'▼▼ SELLOFF',dir:'dn',note:'War shock + oil spike = stagflation fear'},
+        {icon:'📉',name:'Gulf Markets (ADX, DFM)',sub:'UAE and Saudi markets',trend:'▼▼ CLOSED',dir:'dn',note:'ADX/DFM closed Mon-Tue; Aramco hit'},
       ]
     }
   },
   {
-    id:"ukraine",
-    name:"Russia – Ukraine War",
-    flag:"🇺🇦",
-    color:"#4fc3f7",
-    startYear:2022,
-    status:"ACTIVE",sClass:"s-active",
-    totalDeaths:"250,000–323,000",
-    killed:"250K–323K",
-    injured:"~1.1M (KIA+WIA)",
-    totalNum:300000,
-    pct:100,
-    source:"Economist/Neta Crawford, Jul 2025",
-    tags:[
-      {label:"EUROPEAN THEATER",color:"#4fc3f7"},
-      {label:"NATO INVOLVEMENT",color:"#2ec4b6"},
-      {label:"NUCLEAR RISK",color:"#ef5350"}
-    ],
-    casualties:{
-      rows:[
-        {label:"Russian Military Killed",val:"200,000–250,000",src:"UK MoD Sep 2025 / CSIS Jun 2025"},
-        {label:"Russian Total Casualties (KIA+WIA)",val:"1,000,000–1,118,000",src:"UK MoD Oct 2025 / Richard Moore Sep 2025"},
-        {label:"Ukrainian Military Killed",val:"60,000–100,000",src:"Zelenskyy Apr 2025 / CSIS Jun 2025"},
-        {label:"Ukrainian Total Casualties (KIA+WIA)",val:"~400,000",src:"Trump Dec 2024 / Zelenskyy Jan 2025"},
-        {label:"Ukrainian Civilian Deaths",val:"~15,000 verified",src:"OHCHR Dec 2025 (minimum; real toll higher)"},
-        {label:"Ukrainian Civilian Injured",val:"~40,601 verified",src:"OHCHR Dec 2025"},
-        {label:"Verified Russian Dead (open-source)",val:"200,000 names",src:"BBC Russian / Mediazona, Feb 2026"},
-        {label:"People Displaced",val:"6.5M internally / 6.8M abroad",src:"UNHCR 2025"},
-      ]
-    },
+    id:'ukraine', name:'Russia - Ukraine War', flag:'🇺🇦', color:'#4fc3f7',
+    startYear:2022, status:'ACTIVE', sClass:'s-active',
+    killed:'250K-323K', injured:'~1.1M', totalNum:300000, pct:100,
+    source:'Economist / UK MoD Jul 2025',
+    tags:[{label:'EUROPEAN THEATER',color:'#4fc3f7'},{label:'NATO INVOLVEMENT',color:'#2ec4b6'},{label:'NUCLEAR RISK',color:'#ef5350'}],
+    casualties:{rows:[
+      {label:'Russian Military Killed',val:'200,000-250,000',src:'UK MoD Sep 2025'},
+      {label:'Russian Total Casualties (KIA+WIA)',val:'1,000,000-1,118,000',src:'UK MoD Oct 2025'},
+      {label:'Ukrainian Military Killed',val:'60,000-100,000',src:'Zelensky Apr 2025'},
+      {label:'Ukrainian Civilian Deaths',val:'~15,000 verified',src:'OHCHR Dec 2025'},
+      {label:'Ukrainian Civilian Injured',val:'~40,601 verified',src:'OHCHR Dec 2025'},
+      {label:'People Displaced',val:'6.5M internally / 6.8M abroad',src:'UNHCR 2025'},
+    ]},
     geopolitics:[
-      {icon:"🌍",title:"NATO's Biggest Test Since Cold War",desc:"Russia's invasion triggered NATO's largest military mobilisation since 1991. Finland and Sweden joined NATO (2023–24). NATO spending surged past 2% GDP target across most members."},
-      {icon:"🇺🇸",title:"US Aid & Policy Shift",desc:"The US delivered $175B+ in military/economic aid to Ukraine 2022–2025. Under Trump (2025–), US-Russia talks began in Riyadh without Ukraine, triggering transatlantic tensions."},
-      {icon:"🇷🇺",title:"Russia's Economy & Isolation",desc:"Russia faces severe Western sanctions, was expelled from SWIFT, and lost $300B+ in frozen assets. But oil/gas sales to India and China kept it afloat."},
-      {icon:"⚛️",title:"Nuclear Dimension",desc:"Russia repeatedly invoked nuclear doctrine. NATO raised alert levels. The war marked the first time since the Cold War that nuclear use was a serious policy scenario."},
-      {icon:"🌾",title:"Global Food Crisis",desc:"Ukraine and Russia together supply ~30% of global wheat. The war triggered food price spikes worldwide, pushing millions into hunger in Africa and the Middle East."},
-      {icon:"🤝",title:"Peace Talks",desc:"US-Russia framework talks (28 points) drafted late 2025. No formal ceasefire as of March 2026. Russia gained ~176 sq mi/month in 2025."},
+      {icon:'🌍',title:'NATO Biggest Test Since Cold War',desc:'Russia invasion triggered NATO largest military mobilisation since 1991. Finland and Sweden joined NATO in 2023-24. NATO spending surged past 2% GDP target across most members.'},
+      {icon:'🇺🇸',title:'US Aid and Policy Shift',desc:'US delivered $175B+ in military/economic aid to Ukraine 2022-2025. Under Trump, US-Russia talks began in Riyadh without Ukraine, triggering transatlantic tensions.'},
+      {icon:'⚛️',title:'Nuclear Dimension',desc:'Russia repeatedly invoked nuclear doctrine. NATO raised alert levels. First time since Cold War that nuclear use was a serious policy scenario.'},
+      {icon:'🌾',title:'Global Food Crisis',desc:'Ukraine and Russia supply ~30% of global wheat. War triggered food price spikes worldwide, pushing millions into hunger in Africa and the Middle East.'},
     ],
     repercussions:[
-      {icon:"💡",title:"European Energy Shock",desc:"Europe scrambled for LNG alternatives; gas prices rose 300%+ at peak. Germany entered recession. EU collectively spent $800B+ on energy subsidies."},
-      {icon:"🏗️",title:"Ukraine's Reconstruction Cost",desc:"World Bank estimated $486B needed to rebuild Ukraine as of 2024. Grows monthly."},
-      {icon:"🌐",title:"Global Rearmament",desc:"Global defence spending hit $2.4T in 2025. Germany ended 'Zeitenwende' neutrality. Poland became Europe's biggest per-GDP defence spender."},
-      {icon:"🧊",title:"New Cold War Architecture",desc:"Russia-China-Iran-DPRK axis deepened. North Korea sent troops; Iran provided drones; China provided dual-use goods despite denials."},
-      {icon:"📦",title:"Supply Chain Disruption",desc:"Black Sea grain exports blockaded for months. Semiconductor supply chains disrupted. Neon gas (critical for chip manufacturing) shortage from Ukraine."},
+      {icon:'💡',title:'European Energy Shock',desc:'Europe scrambled for LNG alternatives; gas prices rose 300%+ at peak. Germany entered recession. EU collectively spent $800B+ on energy subsidies.'},
+      {icon:'🏗️',title:'Ukraine Reconstruction Cost',desc:'World Bank estimated $486B needed to rebuild Ukraine as of 2024. Grows monthly.'},
+      {icon:'🌐',title:'Global Rearmament',desc:'Global defence spending hit $2.4T in 2025. Germany ended Zeitenwende neutrality. Poland became Europe biggest per-GDP defence spender.'},
     ],
-    cost:{
-      rows:[
-        {label:"US military aid to Ukraine (2022–2025)",val:"$175B+"},
-        {label:"EU economic & military aid",val:"~$100B+"},
-        {label:"Ukraine GDP loss (2022–2025 cumulative)",val:"~$600B"},
-        {label:"Ukraine infrastructure damage (World Bank)",val:"$486B+"},
-        {label:"Russian frozen sovereign assets (Western)",val:"$300B"},
-        {label:"Russia defence spending 2025",val:"~$150B (6% of GDP)"},
-        {label:"Global energy cost increase (EU)",val:"~$800B subsidies"},
-      ]
-    },
+    cost:{rows:[
+      {label:'US military aid to Ukraine (2022-2025)',val:'$175B+'},
+      {label:'EU economic and military aid',val:'~$100B+'},
+      {label:'Ukraine infrastructure damage (World Bank)',val:'$486B+'},
+      {label:'Russian frozen sovereign assets (Western)',val:'$300B'},
+    ]},
     market:{
-      intro:"The Russia-Ukraine war restructured European energy, defence, agriculture, and commodities markets. Effects ripple through global supply chains.",
+      intro:'The Russia-Ukraine war restructured European energy, defence, agriculture, and commodities markets.',
       rows:[
-        {icon:"🛡️",name:"Defence Stocks (RTX, LMT, BA)",sub:"Raytheon, Lockheed, Boeing",trend:"▲ STRONG BUY",dir:"up",note:"Every escalation drives defence procurement"},
-        {icon:"⚡",name:"European Gas (TTF)",sub:"Natural gas futures",trend:"▲ VOLATILE",dir:"up",note:"Spikes on infrastructure attacks"},
-        {icon:"🌾",name:"Wheat Futures (CBOT)",sub:"Chicago Board of Trade",trend:"▲ ELEVATED",dir:"up",note:"Ukraine/Russia = 30% of global export"},
-        {icon:"🛢️",name:"Crude Oil (Brent)",sub:"Sanctions keep Russian oil off W. markets",trend:"▲ MODERATE",dir:"up",note:"Ceasefire could push Brent down $8–12"},
-        {icon:"📉",name:"EUR/USD",sub:"Euro vs Dollar",trend:"▼ BEARISH",dir:"dn",note:"Energy costs weigh on EU economy"},
-        {icon:"🏦",name:"European Bank Stocks",sub:"Exposure to Russia/Ukraine",trend:"▼ CAUTION",dir:"dn",note:"Loan exposure + energy default risks"},
+        {icon:'🛡️',name:'Defence Stocks',sub:'Raytheon, Lockheed, Boeing',trend:'▲ STRONG',dir:'up',note:'Every escalation drives procurement'},
+        {icon:'⚡',name:'European Gas (TTF)',sub:'Natural gas futures',trend:'▲ VOLATILE',dir:'up',note:'Spikes on infrastructure attacks'},
+        {icon:'🌾',name:'Wheat Futures (CBOT)',sub:'Chicago Board of Trade',trend:'▲ ELEVATED',dir:'up',note:'Ukraine/Russia = 30% of global export'},
+        {icon:'📉',name:'EUR/USD',sub:'Euro vs Dollar',trend:'▼ BEARISH',dir:'dn',note:'Energy costs weigh on EU economy'},
       ]
     }
   },
   {
-    id:"sudan",
-    name:"Sudan Civil War",
-    flag:"🇸🇩",
-    color:"#ff9800",
-    startYear:2023,
-    status:"ESCALATING",sClass:"s-escl",
-    totalDeaths:"150,000–400,000+",
-    killed:"150K–400K",
-    injured:"Hundreds of thousands",
-    totalNum:250000,
-    pct:83,
-    source:"ACLED 28,700+ / US Envoy up to 400,000",
-    tags:[
-      {label:"GENOCIDE DECLARED (US)",color:"#ef5350"},
-      {label:"WORST FAMINE IN 40 YRS",color:"#ff9800"},
-      {label:"WORLD'S LARGEST DISPLACEMENT",color:"#ab47bc"}
-    ],
-    casualties:{
-      rows:[
-        {label:"ACLED Verified Deaths (battles)",val:"28,700+ (conservative min)",src:"ACLED Dec 2024 — excludes disease/famine deaths"},
-        {label:"Satellite/Modelling Estimates",val:"150,000+ (el-Fasher alone: 60,000+)",src:"Wikipedia / Yale Humanitarian Research Lab"},
-        {label:"US Special Envoy Estimate",val:"Up to 400,000 since Apr 2023",src:"CFR Global Conflict Tracker"},
-        {label:"Civilian Killings (2025)",val:"2.5× increase vs 2024",src:"UN Human Rights Chief Volker Türk, Feb 2026"},
-        {label:"Civilian Deaths (Jan–Jun 2025)",val:"3,384 documented (80% of all 2024)",src:"UN OHCHR Sep 2025 (likely severe undercount)"},
-        {label:"Since Jan 2026: Drone strikes alone",val:"~600 killed or injured",src:"UN Volker Türk, Feb 2026"},
-        {label:"Internally Displaced",val:"9 million",src:"UNHCR / UN OCHA"},
-        {label:"Refugees Fled Sudan",val:"3.5 million+",src:"As of Feb 2025"},
-      ]
-    },
+    id:'sudan', name:'Sudan Civil War', flag:'🇸🇩', color:'#ff9800',
+    startYear:2023, status:'ESCALATING', sClass:'s-escl',
+    killed:'150K-400K', injured:'Hundreds of thousands', totalNum:250000, pct:83,
+    source:'ACLED / US Envoy',
+    tags:[{label:'GENOCIDE DECLARED (US)',color:'#ef5350'},{label:'WORST FAMINE IN 40 YRS',color:'#ff9800'},{label:'12M DISPLACED',color:'#ab47bc'}],
+    casualties:{rows:[
+      {label:'Killed (ACLED verified minimum)',val:'28,700+ verified conflict deaths',src:'ACLED Jan 2026'},
+      {label:'Killed (US Envoy estimate)',val:'Up to 400,000',src:'US Special Envoy Tom Perriello, Apr 2024'},
+      {label:'Civilians killed in drone strikes (Jan 2026)',val:'600+ killed or injured',src:'UN OHCHR Feb 2026'},
+      {label:'Displaced internally',val:'12.0 million — world largest crisis',src:'UNHCR 2025'},
+      {label:'Children acutely malnourished',val:'5 million+',src:'UNICEF 2025'},
+    ]},
     geopolitics:[
-      {icon:"⚔️",title:"SAF vs RSF Civil War",desc:"The war pits Sudan's official Army (SAF) led by Gen. al-Burhan against the paramilitary Rapid Support Forces (RSF) under Gen. Hemedti. Began April 15, 2023 after a post-coup power struggle."},
-      {icon:"🇦🇪",title:"UAE's Role & ICJ Case",desc:"The UAE has been found to have supplied Chinese weapons to the RSF via third-party channels. Sudan filed an ICJ complaint against UAE for genocide complicity in March 2025."},
-      {icon:"🌍",title:"African Union & Neighbours Failing",desc:"AU and regional mediation have collapsed repeatedly. Chad, Ethiopia, and South Sudan are overwhelmed with refugees. Libya and Turkey attempted brief mediation."},
-      {icon:"⚗️",title:"Chemical Weapons Confirmed",desc:"In 2025, US officials confirmed SAF used chemical weapons against RSF at least twice in rural areas. The US subsequently sanctioned SAF chief al-Burhan."},
-      {icon:"🏛️",title:"Parallel Government Formed",desc:"In February 2025, RSF-led forces signed a charter and a new constitution in March 2025, forming a rival Government of Peace and Unity — fragmenting Sudan's statehood."},
-      {icon:"🌐",title:"International Isolation",desc:"US, UK, EU and Canada have imposed sanctions on both sides. The UN Security Council passed a ceasefire demand (Resolution 1556) that has been consistently ignored."},
+      {icon:'⚔️',title:'SAF vs RSF — A Generals War',desc:'The conflict is between Sudan Armed Forces (SAF) led by Gen. Burhan and the Rapid Support Forces (RSF) led by Gen. Hemedti. Both were partners in the 2019 coup and 2021 coup before turning on each other in April 2023.'},
+      {icon:'🌍',title:'Regional Proxy Dimensions',desc:'UAE backs RSF financially and logistically. Egypt and Saudi Arabia support SAF. Russia supplies weapons to RSF via Wagner Group successor. Ethiopia, Chad, and Libya are destabilised by cross-border spill.'},
+      {icon:'🌾',title:'Famine and Starvation',desc:'Sudan IPC Famine Review Committee declared famine in multiple regions including North Darfur in 2024. 25.6 million people face acute food insecurity — worst in Sudan history.'},
     ],
     repercussions:[
-      {icon:"🌾",title:"World's Largest Hunger Crisis",desc:"25 million people face acute food insecurity. Famine declared in el-Fasher, Kadugli, and other regions. Worst famine in 40 years. 4.2 million acutely malnourished children."},
-      {icon:"🏥",title:"Healthcare Collapse",desc:"Yale Lab found nearly 50% of Khartoum hospitals damaged. Cholera killed 546+ in 10 states. MSF documented malaria, dengue, measles, and HIV treatment collapse."},
-      {icon:"👶",title:"Children at Catastrophic Risk",desc:"770,000 children at imminent risk of death from starvation. 4 million children acutely malnourished. Education has virtually ceased in conflict zones."},
-      {icon:"🌍",title:"Regional Destabilisation",desc:"Chad, Ethiopia, and South Sudan host millions of Sudanese refugees. All three are politically fragile. Sudan's war could cascade into a broader regional collapse."},
-      {icon:"⚖️",title:"War Crimes & Genocide",desc:"UN Council foreign ministers declared RSF actions in el-Fasher constitute war crimes, crimes against humanity, and 'hallmarks of genocide'. US declared genocide in Jan 2025."},
+      {icon:'🌍',title:'World Largest Displacement Crisis',desc:'12 million internally displaced, 2+ million fled to Chad, Egypt, South Sudan. UNHCR calls it world worst and most neglected crisis.'},
+      {icon:'🌾',title:'Africa Food Security Collapse',desc:'Sudan was a major regional food producer. Destruction of farms and infrastructure pushes neighbouring nations toward famine.'},
     ],
-    cost:{
-      rows:[
-        {label:"Estimated GDP contraction (Sudan 2023–25)",val:"−40%+"},
-        {label:"UN humanitarian appeal for Sudan 2025",val:"$2.7B (less than 40% funded)"},
-        {label:"Infrastructure destroyed (Khartoum state alone)",val:"$10B+ estimated"},
-        {label:"Oil revenue lost (pipelines damaged)",val:"$2B+ annually"},
-        {label:"Regional refugee burden (Chad, Ethiopia)",val:"$1B+ additional cost"},
-      ]
-    },
+    cost:{rows:[
+      {label:'Annual humanitarian funding gap (DRC)',val:'$2.7B unfunded (2025)'},
+      {label:'Sudan GDP loss since conflict began',val:'~50% contraction'},
+      {label:'Infrastructure destruction estimate',val:'$10B+'},
+    ]},
     market:{
-      intro:"Sudan's war has limited direct market impact globally, but creates significant risk in African frontier markets, gold, and humanitarian supply chains.",
+      intro:'Sudan war has commodity and geopolitical market implications, especially through gold and regional instability.',
       rows:[
-        {icon:"🥇",name:"Gold (XAU/USD)",sub:"Sudan is Africa's 3rd largest gold producer",trend:"▲ UPWARD PRESSURE",dir:"up",note:"RSF funds war via UAE gold exports"},
-        {icon:"🛢️",name:"Oil (Sudan pipelines)",sub:"South Sudan oil via Sudan ports",trend:"▼ DISRUPTED",dir:"dn",note:"Pipelines & Port Sudan damaged"},
-        {icon:"🌾",name:"Grain / Food Commodities",sub:"Regional food prices",trend:"▲ ELEVATED",dir:"up",note:"Sudan was net food importer; now zero production"},
-        {icon:"🏦",name:"African Frontier Markets",sub:"SSA bank/equity exposure",trend:"▼ RISK-OFF",dir:"dn",note:"Contagion to Chad, Ethiopia, CAR"},
-        {icon:"🤲",name:"Humanitarian Aid Stocks",sub:"NGO supply chains, logistics",trend:"▲ DEMAND UP",dir:"up",note:"Massive aid need, chronic underfunding"},
+        {icon:'🥇',name:'Gold',sub:'RSF controls Sudan gold mines',trend:'▲ ELEVATED',dir:'up',note:'Conflict gold enters markets via UAE'},
+        {icon:'🌾',name:'Sorghum / Millet Futures',sub:'East Africa food commodity',trend:'▲ SPIKE',dir:'up',note:'Sudan was key regional food producer'},
+        {icon:'📉',name:'Frontier Markets (Africa)',sub:'Sub-Saharan market indices',trend:'▼ RISK-OFF',dir:'dn',note:'Contagion risk for Chad, CAR, Ethiopia'},
       ]
     }
   },
   {
-    id:"gaza",
-    name:"Israel – Gaza War",
-    flag:"🇵🇸",
-    color:"#ef5350",
-    startYear:2023,
-    status:"CEASEFIRE+",sClass:"s-cf",
-    totalDeaths:"73,600+ (Gaza) / 2,038+ (Israel)",
-    killed:"73,600+",
-    injured:"154,525+",
-    totalNum:75000,
-    pct:62,
-    source:"Gaza MoH Jan 2026 / UK FM Yvette Cooper Feb 2026",
-    tags:[
-      {label:"INTERNATIONAL COURT CASE",color:"#ef5350"},
-      {label:"UN: GENOCIDE RULING SEP 2025",color:"#ab47bc"},
-      {label:"FAMINE DECLARED",color:"#ff9800"}
-    ],
-    casualties:{
-      rows:[
-        {label:"Palestinians Killed (Gaza MoH)",val:"73,600+ (as of Jan 2026)",src:"Gaza Health Ministry, cited by UK FM Cooper, Feb 2026"},
-        {label:"Palestinians Injured",val:"154,525+",src:"UNRWA/OCHA Aug 2025"},
-        {label:"Independent Academic Estimate (total)",val:"83,000–126,000",src:"Nature survey / Max Planck Institute Nov 2025"},
-        {label:"Lancet Model (incl. indirect deaths)",val:"100,000+ by Oct 2025",src:"Lancet Global Health / Costs of War Project"},
-        {label:"Children Killed",val:"30%+ of total (21,000+ children)",src:"Gaza MoH Sep 2025"},
-        {label:"Children Orphaned (both parents)",val:"2,596 children",src:"Gaza MoH Sep 2025"},
-        {label:"Israeli Deaths (Oct 7 attack + war)",val:"2,038+",src:"Multiple verified sources"},
-        {label:"UNRWA Staff Killed",val:"382 colleagues",src:"UNRWA Dec 2025"},
-      ]
-    },
+    id:'gaza', name:'Israel - Gaza War', flag:'🇵🇸', color:'#ef5350',
+    startYear:2023, status:'ACTIVE', sClass:'s-active',
+    killed:'73,600+', injured:'154,525+', totalNum:80000, pct:80,
+    source:'Gaza MoH Jan 2026',
+    tags:[{label:'ICJ GENOCIDE PROCEEDINGS',color:'#ef5350'},{label:'UN HUMANITARIAN CRISIS',color:'#ff9800'},{label:'73,600+ KILLED',color:'#ff4d4d'}],
+    casualties:{rows:[
+      {label:'Palestinians Killed (Gaza MoH)',val:'73,600+',src:'Gaza Ministry of Health Jan 2026'},
+      {label:'Palestinians Injured',val:'154,525+',src:'Gaza MoH Jan 2026'},
+      {label:'Children Killed',val:'21,000+',src:'UNICEF / Save the Children 2025'},
+      {label:'Women Killed',val:'12,000+',src:'UN Women 2025'},
+      {label:'Estimated total including indirect deaths',val:'100,000-126,000',src:'Lancet / Nature survey methodology'},
+      {label:'Israelis killed (Oct 7 attack)',val:'1,139',src:'Israeli government'},
+      {label:'Israeli soldiers killed (since Oct 7)',val:'800+',src:'IDF'},
+    ]},
     geopolitics:[
-      {icon:"💣",title:"Triggered by Oct 7 Hamas Attack",desc:"Hamas and allied groups killed ~1,200 Israelis and took ~250 hostages on Oct 7, 2023. Israel launched the most intense aerial campaign in modern history in response."},
-      {icon:"⚖️",title:"ICJ & Genocide Ruling",desc:"The UN Human Rights Council (Sep 2025) found Israel 'bears responsibility for the failure to prevent genocide.' The ICJ in May 2024 ordered a halt to Rafah operations; Israel continued."},
-      {icon:"🕊️",title:"Ceasefire Phases",desc:"A ceasefire began Jan 2025 with hostage-prisoner swaps. Israel resumed strikes in March 2025. A partial ceasefire was in place by end-2025, but IDF operations continued with ongoing casualties."},
-      {icon:"🌍",title:"Regional Escalation to Iran",desc:"Israel conducted drone strikes on Tehran in June 2025, killing 425 including IRGC commanders. Iran retaliated. The exchange threatened to escalate into a wider Middle East war."},
-      {icon:"🇺🇸",title:"US Diplomatic Stance",desc:"US blocked multiple UNSC ceasefire resolutions in 2024. Under Trump (2025–), US-backed a ceasefire proposal but also approved additional arms transfers to Israel."},
-      {icon:"🌐",title:"Global Protest & Isolation",desc:"The war triggered the largest global protest movement since the Iraq War. Multiple countries (Colombia, Chile, Spain, Ireland) summoned Israeli ambassadors or halted arms sales."},
+      {icon:'💥',title:'October 7 Hamas Attack',desc:'Hamas and allied groups launched a surprise attack on southern Israel on Oct 7, 2023, killing 1,139 people including 364 at a music festival. 251 hostages taken. Israel declared war the same day.'},
+      {icon:'⚖️',title:'ICJ Genocide Proceedings',desc:'South Africa filed genocide case against Israel at the International Court of Justice in December 2023. ICJ ordered provisional measures including a halt to Rafah offensive in May 2024. Israel continued operations.'},
+      {icon:'🌍',title:'US Unconditional Support',desc:'US vetoed four UN Security Council ceasefire resolutions in 2023-2024. US provided $18B+ in military aid to Israel since Oct 7. Biden approved 2,000-lb bombs and F-15 jets.'},
+      {icon:'🤝',title:'Ceasefire Negotiations',desc:'Qatar, Egypt and US mediated ceasefire talks throughout 2024. Phase 1 ceasefire agreed Jan 2025 securing release of hostages. Implementation has been fragile.'},
     ],
     repercussions:[
-      {icon:"🏥",title:"Healthcare System Destroyed",desc:"Nearly all hospitals in Gaza were damaged or shut. Nasser Hospital (the last in south Gaza) was struck Aug 2025. 312 UNRWA installations hit. No functioning ICU capacity for most of 2025."},
-      {icon:"🌾",title:"Engineered Famine",desc:"IPC declared famine in Gaza Governorate Aug 2025. 640,000+ people in IPC Phase 5 (catastrophic). Less than 15% of planned aid convoys reached Gaza in many weeks."},
-      {icon:"🏗️",title:"Infrastructure Obliteration",desc:"Over 86% of Gaza within Israeli militarised/evacuation zone at peak. 17 buildings collapsed in one week from storms on already-damaged structures. 235,000 affected by flooding, Dec 2025."},
-      {icon:"🕊️",title:"Two-State Solution Collapse",desc:"Experts widely say a two-state solution is now harder than at any time since 1948. West Bank settlement expansion continued throughout the war, fracturing Palestinian territory further."},
-      {icon:"🚢",title:"Red Sea & Shipping Crisis",desc:"Houthi attacks on Red Sea shipping (in solidarity with Gaza) forced major rerouting via Cape of Good Hope, adding 10–14 days and $1–3M per ship, disrupting global trade."},
+      {icon:'🚢',title:'Red Sea Shipping Crisis',desc:'Houthi attacks on shipping in solidarity with Gaza increased Red Sea transit costs 200-300%. Major shipping companies rerouted around Cape of Good Hope adding 10-14 days to journeys.'},
+      {icon:'🌍',title:'Arab and Muslim World Protests',desc:'Mass protests across Arab world, Muslim-majority countries, Europe, and North America. Several countries recalled ambassadors from Israel. ICC issued arrest warrant for Netanyahu.'},
+      {icon:'🎓',title:'Global Campus Protests',desc:'Pro-Palestinian encampments at hundreds of universities in US, Europe, and Australia. Several universities divested from Israeli-linked companies.'},
     ],
-    cost:{
-      rows:[
-        {label:"Gaza reconstruction cost (World Bank estimate)",val:"$80B+"},
-        {label:"Israel defence spending increase (2023–25)",val:"~$25B additional"},
-        {label:"US military aid to Israel (2023–2025)",val:"~$18B"},
-        {label:"Red Sea rerouting extra cost (global trade)",val:"~$200B+ annually at peak"},
-        {label:"Gaza GDP (effectively zero)",val:"−80%+ contraction"},
-        {label:"Palestinian Authority fiscal crisis",val:"$1.5B+ deficit"},
-      ]
-    },
+    cost:{rows:[
+      {label:'Gaza reconstruction cost (World Bank estimate)',val:'$80B+'},
+      {label:'Gaza GDP loss (2024)',val:'-83%'},
+      {label:'Red Sea shipping cost increase',val:'+200-300%'},
+      {label:'US military aid to Israel (since Oct 7)',val:'$18B+'},
+    ]},
     market:{
-      intro:"The Gaza war's market impact centres on regional risk premiums, energy, shipping, and defence. The Iran-Israel escalation of Jun 2025 was the biggest market shock.",
+      intro:'The Gaza war has triggered significant regional security premiums and global shipping disruptions.',
       rows:[
-        {icon:"🛢️",name:"Oil (Brent / WTI)",sub:"Middle East risk premium",trend:"▲ ELEVATED",dir:"up",note:"Iran escalation risk = +$10–20/bbl"},
-        {icon:"🚢",name:"Shipping / Freight (Drewry WCI)",sub:"Red Sea rerouting",trend:"▲ SURGED",dir:"up",note:"Rates +200–300% at peak, still elevated"},
-        {icon:"🛡️",name:"Israeli Defence Stocks (IAI, Elbit)",sub:"Domestic Israeli arms",trend:"▲ STRONG",dir:"up",note:"Wartime production at record levels"},
-        {icon:"💰",name:"Israeli Shekel (ILS)",sub:"Currency / sovereign risk",trend:"▼ WEAKENED",dir:"dn",note:"Downgraded by Moody's, S&P in 2024"},
-        {icon:"⚡",name:"LNG / Energy (Middle East risk)",sub:"Strait of Hormuz premium",trend:"▲ RISK BID",dir:"up",note:"Any Iran blockade = +50% gas prices"},
-        {icon:"🥇",name:"Gold (Safe Haven)",sub:"XAU/USD",trend:"▲ STRONG BID",dir:"up",note:"Geopolitical fear = gold outperforms"},
+        {icon:'🚢',name:'Shipping Rates (Suez route)',sub:'Houthi attacks rerouting traffic',trend:'▲ ELEVATED',dir:'up',note:'Cape of Good Hope adds 10-14 days'},
+        {icon:'🛢️',name:'Oil Risk Premium',sub:'Middle East escalation risk',trend:'▲ MODERATE',dir:'up',note:'Ceasefire could drop Brent $5-8'},
+        {icon:'₪',name:'Israeli Shekel (ILS)',sub:'vs USD',trend:'▼ WEAK',dir:'dn',note:'War cost, credit downgrade weigh on ILS'},
+        {icon:'🛡️',name:'Israeli Tech Stocks',sub:'NASDAQ-listed Israeli companies',trend:'▼ UNDERPERFORM',dir:'dn',note:'Global boycott pressure, talent exodus'},
       ]
     }
   },
   {
-    id:"myanmar",
-    name:"Myanmar Civil War",
-    flag:"🇲🇲",
-    color:"#ab47bc",
-    startYear:2021,
-    status:"ACTIVE",sClass:"s-active",
-    totalDeaths:"~50,000+ (since 2021)",
-    killed:"~50,000+",
-    injured:"Unknown — undercounted",
-    totalNum:50000,
-    pct:41,
-    source:"ACLED / Assistance Association for Political Prisoners",
-    tags:[
-      {label:"MILITARY JUNTA",color:"#ab47bc"},
-      {label:"ETHNIC ALLIANCES",color:"#26a69a"},
-      {label:"CHINA BORDER FACTOR",color:"#ef5350"}
-    ],
-    casualties:{
-      rows:[
-        {label:"Total Deaths Since 2021 Coup",val:"50,000+",src:"ACLED estimates / AAPP"},
-        {label:"Civilians Killed (documented)",val:"5,000+",src:"AAPP confirmed data"},
-        {label:"Political Prisoners",val:"27,000+",src:"AAPP Nov 2025"},
-        {label:"Internally Displaced",val:"3.3 million",src:"UNHCR / UN OCHA 2025"},
-        {label:"Villages Burned by Military",val:"90,000+ homes destroyed",src:"UNHCR"},
-        {label:"Aerial Bombings of Civilians",val:"1,000+ documented strikes",src:"Data for Myanmar"},
-      ]
-    },
+    id:'myanmar', name:'Myanmar Civil War', flag:'🇲🇲', color:'#ab47bc',
+    startYear:2021, status:'ESCALATING', sClass:'s-escl',
+    killed:'50,000+', injured:'Unknown', totalNum:50000, pct:67,
+    source:'ACLED / AAPP',
+    tags:[{label:'MILITARY COUP 2021',color:'#ab47bc'},{label:'3.3M DISPLACED',color:'#ff9800'},{label:'NUG RESISTANCE',color:'#4fc3f7'}],
+    casualties:{rows:[
+      {label:'Killed since coup (Feb 2021)',val:'50,000+ est.',src:'ACLED / Assistance Association for Political Prisoners'},
+      {label:'Killed by military (AAPP verified)',val:'5,000+ civilian deaths',src:'AAPP 2025'},
+      {label:'People displaced',val:'3.3 million',src:'UNHCR 2025'},
+      {label:'Political prisoners',val:'26,000+',src:'AAPP Jan 2026'},
+    ]},
     geopolitics:[
-      {icon:"🪖",title:"Coup & Resistance",desc:"The military (Tatmadaw) seized power Feb 2021. A People's Defence Force and alliance of ethnic armed organisations (Three Brotherhood Alliance) have recaptured major territories by 2024–25."},
-      {icon:"🇨🇳",title:"China's Strategic Position",desc:"China has deep economic interests (pipelines, ports, Belt & Road). Beijing has brokered ceasefires between the junta and ethnic groups when Chinese business interests are threatened."},
-      {icon:"🏛️",title:"Junta Losing Territory",desc:"By 2025, the junta controls less than 40% of Myanmar's territory — the lowest since independence. The National Unity Government (NUG) is fighting for international recognition."},
-      {icon:"🌏",title:"ASEAN Paralysis",desc:"ASEAN's 5-Point Consensus has been completely ignored. Thailand and Cambodia have been accused of soft engagement with the junta. Western sanctions have had limited effect."},
+      {icon:'🪖',title:'Military Coup February 2021',desc:'Tatmadaw (Myanmar military) seized power on Feb 1, 2021, detaining elected leader Aung San Suu Kyi. The National Unity Government (NUG) was formed as a government-in-exile. Civil disobedience and then armed resistance followed.'},
+      {icon:'🔥',title:'Operation 1027 and Military Losses',desc:'In October 2023, coordinated attacks by Three Brotherhood Alliance captured major military outposts. By 2025 the military controls less than 30% of territory, down from 72% at coup.'},
+      {icon:'🇨🇳',title:'China Involvement',desc:'China is Myanmar largest investor and border partner. China has brokered ceasefires between military and ethnic armed groups while maintaining ties with Tatmadaw. China seeks stability on its Yunnan border.'},
     ],
     repercussions:[
-      {icon:"🌊",title:"Regional Refugee Crisis",desc:"1M+ refugees in Bangladesh (Rohingya from pre-2021 era). 500K+ in Thailand and India. Myanmar's collapse threatens regional stability across mainland Southeast Asia."},
-      {icon:"💊",title:"Drug Trade Explosion",desc:"Myanmar became the world's #1 opium producer in 2023, overtaking Afghanistan. The conflict has enabled drug trafficking networks to flourish in ungoverned territories."},
-      {icon:"🏭",title:"Economic Collapse",desc:"Myanmar's economy shrunk 18% in 2021 alone. Foreign investment fled. Energy and banking systems collapsed. Millions fell below poverty line."},
+      {icon:'🌏',title:'Regional Destabilisation',desc:'Myanmar instability spills into Thailand, Bangladesh (Rohingya), India (Chin state). ASEAN has failed to enforce its Five-Point Consensus.'},
+      {icon:'⛽',title:'Natural Gas Disruption',desc:'Myanmar gas pipelines to China and Thailand are at risk. Thailand receives ~20% of its gas from Myanmar, causing energy vulnerability.'},
     ],
-    cost:{
-      rows:[
-        {label:"Myanmar GDP contraction (2021–25)",val:"−30%+ cumulative"},
-        {label:"Humanitarian assistance needed (UN 2025)",val:"$993M (under 30% funded)"},
-        {label:"Foreign investment withdrawn",val:"$5B+"},
-      ]
-    },
+    cost:{rows:[
+      {label:'Myanmar GDP loss since coup',val:'-$20B+ (40% contraction)'},
+      {label:'Humanitarian funding gap (2025)',val:'$400M+ unfunded'},
+      {label:'Garment industry collapse (100K+ jobs)',val:'$2B export loss'},
+    ]},
     market:{
-      intro:"Myanmar is an emerging market frontier. The war has minimal direct global market impact but affects regional supply chains, rare earths, and gas.",
+      intro:'Myanmar war impacts regional energy supply chains and rare mineral markets.',
       rows:[
-        {icon:"⛽",name:"Natural Gas (Myanmar–Thailand pipeline)",sub:"Yadana/Yetagun pipelines",trend:"▼ DISRUPTED",dir:"dn",note:"Pipeline attacks cut Thailand supply"},
-        {icon:"💎",name:"Jade / Gemstones",sub:"Hpakant mines (world's largest jade)",trend:"▲ PRICE RISE",dir:"up",note:"Supply disruption; China demand stable"},
-        {icon:"🏭",name:"Garment Supply Chain (RMG)",sub:"$3.5B export sector",trend:"▼ COLLAPSED",dir:"dn",note:"Brands fled; factories empty"},
-        {icon:"🌱",name:"Agricultural Commodities",sub:"Rice, pulses export",trend:"▼ REDUCED",dir:"dn",note:"Farming disrupted by displacement"},
+        {icon:'⛽',name:'Natural Gas (Myanmar-Thailand)',sub:'PTT pipeline supply',trend:'▲ RISK',dir:'up',note:'~20% of Thailand gas from Myanmar'},
+        {icon:'💎',name:'Jade and Gems',sub:'Hpakant jade mines',trend:'▲ PRICE UP',dir:'up',note:'Mining disrupted; prices elevated'},
+        {icon:'👕',name:'Garment Sector Stocks',sub:'H&M, Zara, Gap (suppliers)',trend:'▼ PRESSURE',dir:'dn',note:'Factory closures force supplier exodus'},
       ]
     }
   },
   {
-    id:"drc",
-    name:"DRC (Congo) – M23 War",
-    flag:"🇨🇩",
-    color:"#26a69a",
-    startYear:2022,
-    status:"ESCALATING",sClass:"s-escl",
-    totalDeaths:"7.3M+ displaced / thousands killed",
-    killed:"Thousands+",
-    injured:"Severely undercounted",
-    totalNum:40000,
-    pct:33,
-    source:"UN OCHA / Human Rights Watch 2025",
-    tags:[
-      {label:"MINERAL WARS",color:"#26a69a"},
-      {label:"RWANDA BACKED M23",color:"#ef5350"},
-      {label:"EASTERN DRC CRISIS",color:"#ff9800"}
-    ],
-    casualties:{
-      rows:[
-        {label:"People Displaced (Eastern DRC)",val:"7.3 million",src:"UNHCR 2025 — DRC is world's largest internal displacement"},
-        {label:"Deaths (M23 conflict 2022–2025)",val:"Thousands+ (systematic undercounting)",src:"UN OCHA / HRW"},
-        {label:"Goma Fell to M23",val:"January 2025",src:"Multiple news sources"},
-        {label:"Sexual Violence Cases",val:"50,000+ reported annually",src:"UN"},
-        {label:"Child Soldiers",val:"3,000+ recruited by M23 alone",src:"UNICEF 2025"},
-      ]
-    },
+    id:'drc', name:'DRC - M23 War', flag:'🇨🇩', color:'#26a69a',
+    startYear:2021, status:'ESCALATING', sClass:'s-escl',
+    killed:'Thousands+', injured:'Severely undercounted', totalNum:20000, pct:40,
+    source:'UN OCHA / HRW',
+    tags:[{label:'RWANDA-BACKED M23',color:'#ef5350'},{label:'7.3M DISPLACED',color:'#ff9800'},{label:'COBALT / COLTAN WAR',color:'#26a69a'}],
+    casualties:{rows:[
+      {label:'Killed (all actors, DRC east)',val:'Thousands+ (severely undercounted)',src:'UN OCHA / HRW 2025'},
+      {label:'People displaced',val:'7.3 million',src:'UNHCR 2025 — world 2nd largest'},
+      {label:'Goma residents displaced (2025 M23 advance)',val:'700,000+',src:'UN OCHA Jan 2025'},
+    ]},
     geopolitics:[
-      {icon:"🇷🇼",title:"Rwanda's Role",desc:"The UN Group of Experts found Rwanda directly supports the M23 rebel group, deploying troops and providing arms. Rwanda denies this. DRC and Rwanda are in open conflict."},
-      {icon:"💎",title:"Resource War",desc:"Eastern DRC holds $24 trillion in mineral wealth including coltan (80% of global supply), cobalt, gold, and lithium — critical for EV batteries and tech supply chains."},
-      {icon:"🌍",title:"AU / UN Deployment Failed",desc:"MONUSCO (UN's largest peacekeeping mission) failed to stop M23. AU peace force SADC-Mission Congo was defeated. Goma fell despite 13,000+ UN peacekeepers in country."},
-      {icon:"🤝",title:"Qatar Mediation",desc:"Qatar brokered talks in 2025. Temporary ceasefire agreed but repeatedly violated. International community has largely failed to stop Rwanda-backed M23."},
+      {icon:'🇷🇼',title:'Rwanda Role',desc:'UN Group of Experts found Rwanda directly supports M23, deploying troops and providing arms. Rwanda denies this. DRC and Rwanda are in open conflict.'},
+      {icon:'💎',title:'Resource War',desc:'Eastern DRC holds $24 trillion in mineral wealth including coltan (80% of global supply), cobalt, gold, and lithium — critical for EV batteries and tech supply chains.'},
+      {icon:'🌍',title:'AU and UN Deployment Failed',desc:'MONUSCO (UN largest peacekeeping mission) failed to stop M23. AU peace force SADC-Mission Congo was defeated. Goma fell despite 13,000+ UN peacekeepers in country.'},
     ],
     repercussions:[
-      {icon:"🔋",title:"Tech Supply Chain Risk",desc:"Congo produces 70% of global cobalt used in EV and phone batteries. War disrupts mining. Apple, Tesla, and major tech firms face supply chain pressure."},
-      {icon:"👶",title:"Humanitarian Catastrophe",desc:"5M+ children acutely malnourished. Measles, cholera, mpox spreading. Eastern DRC is chronically one of the world's worst humanitarian situations."},
-      {icon:"🔥",title:"Risk of Regional War",desc:"DRC-Rwanda tensions risk drawing in Uganda, Burundi, and other neighbours. A regional war across central Africa would be catastrophic."},
+      {icon:'🔋',title:'Tech Supply Chain Risk',desc:'Congo produces 70% of global cobalt used in EV and phone batteries. War disrupts mining. Apple, Tesla, and major tech firms face supply chain pressure.'},
+      {icon:'👶',title:'Humanitarian Catastrophe',desc:'5M+ children acutely malnourished. Measles, cholera, mpox spreading. Eastern DRC is chronically one of the world worst humanitarian situations.'},
     ],
-    cost:{
-      rows:[
-        {label:"Annual humanitarian funding gap (DRC)",val:"$1.8B unfunded"},
-        {label:"Mineral revenue lost to conflict actors",val:"$1.2B+ annually"},
-        {label:"DRC economic output loss",val:"20%+ in eastern regions"},
-      ]
-    },
+    cost:{rows:[
+      {label:'Annual humanitarian funding gap (DRC)',val:'$1.8B unfunded'},
+      {label:'Mineral revenue lost to conflict actors',val:'$1.2B+ annually'},
+    ]},
     market:{
-      intro:"The DRC war has direct implications for the global tech and EV supply chain through cobalt and coltan disruption.",
+      intro:'The DRC war has direct implications for the global tech and EV supply chain through cobalt and coltan disruption.',
       rows:[
-        {icon:"🔋",name:"Cobalt (LME)",sub:"70% of global supply from DRC",trend:"▲ SUPPLY RISK",dir:"up",note:"Any mine closure = EV battery price spike"},
-        {icon:"📱",name:"Coltan / Tantalum",sub:"80% global supply from DRC",trend:"▲ VOLATILE",dir:"up",note:"Used in all smartphones/capacitors"},
-        {icon:"🥇",name:"Gold (DRC artisanal)",sub:"Smuggled via Rwanda",trend:"▲ ACTIVE",dir:"up",note:"Conflict gold enters global markets via UAE"},
-        {icon:"⚡",name:"EV Manufacturers (Tesla, BYD)",sub:"Battery supply chain",trend:"▼ RISK",dir:"dn",note:"Cobalt supply shock = cost increase"},
+        {icon:'🔋',name:'Cobalt (LME)',sub:'70% of global supply from DRC',trend:'▲ SUPPLY RISK',dir:'up',note:'Any mine closure = EV battery price spike'},
+        {icon:'📱',name:'Coltan / Tantalum',sub:'80% global supply from DRC',trend:'▲ VOLATILE',dir:'up',note:'Used in all smartphones/capacitors'},
+        {icon:'⚡',name:'EV Manufacturers (Tesla, BYD)',sub:'Battery supply chain',trend:'▼ RISK',dir:'dn',note:'Cobalt supply shock = cost increase'},
       ]
     }
   },
 ];
 
-/* ===================== PER-CONFLICT MINI TOTALS ===================== */
-const perConflictData = [
-  {name:"🇮🇷 US–Israel vs Iran",color:"#ff4d4d",killed:"570+ (Mar 2026 round)",injured:"1,000+ est.",src:"Red Crescent / PBS"},
-  {name:"🇺🇦 Russia–Ukraine",color:"#4fc3f7",killed:"250K–323K military",injured:"~1.1M (KIA+WIA combined)",src:"UK MoD / CSIS 2025"},
-  {name:"🇸🇩 Sudan",color:"#ff9800",killed:"150K–400K est.",injured:"Hundreds of thousands",src:"ACLED / US Envoy"},
-  {name:"🇵🇸 Israel–Gaza",color:"#ef5350",killed:"73,600+ Palestinian",injured:"154,525+ Palestinian",src:"Gaza MoH Jan 2026"},
-  {name:"🇲🇲 Myanmar",color:"#ab47bc",killed:"50,000+ (since 2021)",injured:"Unknown — severely undercounted",src:"ACLED / AAPP"},
-];
-const pct = document.getElementById('perConflictTotals');
-if(pct){
-  perConflictData.forEach(d=>{
-    const el = document.createElement('div');
-    el.style.cssText=`background:var(--surface);border:1px solid var(--border);border-left:3px solid ${d.color};border-radius:2px;padding:12px 14px;`;
-    el.innerHTML=`
-      <div style="font-size:11px;font-weight:600;color:var(--bright);margin-bottom:8px;">${d.name}</div>
-      <div style="display:flex;flex-direction:column;gap:4px;">
-        <div style="display:flex;justify-content:space-between;align-items:center;gap:6px;">
-          <span style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--dim);">KILLED</span>
-          <span style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:${d.color};font-weight:600;text-align:right;">${d.killed}</span>
-        </div>
-        <div style="display:flex;justify-content:space-between;align-items:center;gap:6px;">
-          <span style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--dim);">INJURED</span>
-          <span style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#f4a261;text-align:right;">${d.injured}</span>
-        </div>
-        <div style="font-size:9px;color:var(--dim);margin-top:2px;border-top:1px solid var(--border);padding-top:4px;">${d.src}</div>
-      </div>
-    `;
-    pct.appendChild(el);
-  });
-}
-
-/* ===================== RENDER HOME ===================== */
-const tbody = document.getElementById('conflictBody');
-conflicts.forEach((c,i)=>{
-  const tr = document.createElement('tr');
-  tr.className='crow';
-  tr.innerHTML=`
-    <td class="crank">${i+1}</td>
-    <td>
-      <div class="cname-cell">
-        <span class="cdot" style="background:${c.color}"></span>
-        <span class="cname">${c.flag} ${c.name}</span>
-        <span class="clink">EXPLORE →</span>
-      </div>
-    </td>
-    <td class="cbar-wrap">
-      <div class="cbar-track"><div class="cbar-fill" style="width:0%;background:${c.color}" data-w="${c.pct}%"></div></div>
-    </td>
-    <td class="ctd-right">
-      <div class="ctd-num" style="color:#ff7070">${c.killed||c.totalDeaths}</div>
-    </td>
-    <td class="ctd-right">
-      <div class="ctd-num" style="color:#f4a261">${c.injured||'—'}</div>
-    </td>
-    <td class="ctd-right ctd-src">${c.source.split('/')[0]}</td>
-    <td class="ctd-right"><span class="cstatus ${c.sClass}">${c.status}</span></td>
-  `;
-  tr.onclick=()=>showDetail(c);
-  tbody.appendChild(tr);
-});
-
-setTimeout(()=>{
-  document.querySelectorAll('.cbar-fill').forEach(el=>{el.style.width=el.dataset.w;});
-},300);
+/* ===================== RENDER CONFLICT TABLE ===================== */
+try {
+  var tbody = document.getElementById('conflictBody');
+  if (tbody) {
+    conflicts.forEach(function(c, i) {
+      var tr = document.createElement('tr');
+      tr.className = 'crow';
+      tr.innerHTML =
+        '<td class="crank">' + (i+1) + '</td>' +
+        '<td><div class="cname-cell">' +
+          '<span class="cdot" style="background:' + c.color + '"></span>' +
+          '<span class="cname">' + c.flag + ' ' + c.name + '</span>' +
+          '<span class="clink">EXPLORE →</span>' +
+        '</div></td>' +
+        '<td class="cbar-wrap"><div class="cbar-track"><div class="cbar-fill" style="width:0%;background:' + c.color + '" data-w="' + c.pct + '%"></div></div></td>' +
+        '<td class="ctd-right"><div class="ctd-num" style="color:#ff7070">' + (c.killed || '—') + '</div></td>' +
+        '<td class="ctd-right"><div class="ctd-num" style="color:#f4a261">' + (c.injured || '—') + '</div></td>' +
+        '<td class="ctd-right ctd-src">' + c.source.split('/')[0] + '</td>' +
+        '<td class="ctd-right"><span class="cstatus ' + c.sClass + '">' + c.status + '</span></td>';
+      tr.onclick = function() { showDetail(c); };
+      tbody.appendChild(tr);
+    });
+    setTimeout(function() {
+      document.querySelectorAll('.cbar-fill').forEach(function(el) { el.style.width = el.dataset.w; });
+    }, 300);
+  }
+} catch(e) { console.warn('Table error:', e); }
 
 /* ===================== CHARTS ===================== */
-Chart.defaults.color='#4a5a6e';
-Chart.defaults.borderColor='#1c2535';
-
-new Chart(document.getElementById('donutChart'),{
-  type:'doughnut',
-  data:{
-    labels:['🔴 US-Israel vs Iran (2026)','Russia–Ukraine','Sudan','Israel–Gaza','Myanmar','DRC','Others'],
-    datasets:[{
-      data:[8,34,16,12,7,6,17],
-      backgroundColor:['#ff4d4d','#4fc3f7','#ff9800','#ef5350','#ab47bc','#26a69a','#455a64'],
-      borderWidth:2,borderColor:'#0c0f15',hoverBorderColor:'#0c0f15',
-    }]
-  },
-  options:{
-    responsive:true,maintainAspectRatio:false,
-    plugins:{
-      legend:{position:'right',labels:{padding:12,font:{family:'IBM Plex Mono',size:10},color:'#6a7e94',boxWidth:9}},
-      tooltip:{callbacks:{label:c=>` ${c.label}: ${c.parsed}% of deaths`}}
-    },
-    cutout:'70%',
-  }
-});
-
-new Chart(document.getElementById('barChart'),{
-  type:'bar',
-  data:{
-    labels:['🔴Iran\n(US-Isr.2026)','Ukraine\n(Russian mil.)','Ukraine\n(Civilian)','Gaza\n(Palestinian)','Sudan\n(Civilian)','Myanmar\n(Civilian)'],
-    datasets:[
-      {label:'Killed (verified)',data:[555,200000,15000,73600,28700,5000],backgroundColor:['#ff4d4dbb','#4fc3f799','#4fc3f744','#ef535099','#ff980099','#ab47bc99'],borderRadius:2},
-    ]
-  },
-  options:{
-    responsive:true,maintainAspectRatio:false,
-    plugins:{legend:{labels:{font:{family:'IBM Plex Mono',size:10},color:'#6a7e94',boxWidth:9}}},
-    scales:{
-      x:{ticks:{font:{family:'IBM Plex Mono',size:9},color:'#4a5a6e'},grid:{color:'#1c253511'}},
-      y:{ticks:{font:{family:'IBM Plex Mono',size:9},color:'#4a5a6e',callback:v=>v>=1000?(v/1000).toFixed(0)+'K':v},grid:{color:'#1c2535'}}
-    }
-  }
-});
-
-/* ===================== LIVE NEWS ENGINE — GitHub Pages Compatible =====================
-   Strategy: Fetch real RSS feeds via allorigins.win CORS proxy (free, no key needed).
-   Falls back to rich curated static data if any feed fails.
-   Auto-refreshes every 5 minutes.
-============================================================================ */
-
-let currentFilter = 'all';
-let cachedNewsItems = [];
-let lastFetchTime = null;
-let refreshTimer = null;
-const REFRESH_INTERVAL = 5 * 60 * 1000;
-
-const CONFLICT_CONFIG = {
-  iran:    { color:'#ff4d4d', tag:'🔴 US–IRAN' },
-  ukraine: { color:'#4fc3f7', tag:'🇺🇦 UKRAINE' },
-  gaza:    { color:'#ef5350', tag:'🇵🇸 GAZA' },
-  sudan:   { color:'#ff9800', tag:'🇸🇩 SUDAN' },
-  myanmar: { color:'#ab47bc', tag:'🇲🇲 MYANMAR' },
-  stances: { color:'#2ec4b6', tag:'🌐 WORLD VIEWS' },
-};
-
-// RSS feeds — proxied through allorigins.win to bypass CORS
-const RSS_FEEDS = [
-  { url:'https://feeds.bbci.co.uk/news/world/middle_east/rss.xml',  source:'BBC News', filters:['iran','gaza','stances'] },
-  { url:'https://feeds.bbci.co.uk/news/world/europe/rss.xml',       source:'BBC News', filters:['ukraine','stances'] },
-  { url:'https://feeds.bbci.co.uk/news/world/africa/rss.xml',       source:'BBC News', filters:['sudan','stances'] },
-  { url:'https://rss.dw.com/rdf/rss-en-world',                      source:'DW News',  filters:['ukraine','iran','stances'] },
-  { url:'https://www.aljazeera.com/xml/rss/all.xml',                source:'Al Jazeera', filters:['iran','gaza','sudan','stances'] },
-  { url:'https://feeds.reuters.com/reuters/topNews',                 source:'Reuters',  filters:['iran','ukraine','gaza','sudan','stances'] },
-];
-
-// Keyword → filter classifier
-const KEYWORDS = {
-  iran:    ['iran','tehran','khamenei','irgc','hormuz','nuclear','natanz','epic fury','persian'],
-  ukraine: ['ukraine','russia','zelenskyy','zelensky','kyiv','moscow','donbas','donetsk','nato','crimea','kherson','zaporizhzhia'],
-  gaza:    ['gaza','israel','hamas','palestin','idf','west bank','rafah','ceasefire','hostage','netanyahu'],
-  sudan:   ['sudan','rsf','khartoum','darfur','hemedti','sahelian','el-fasher'],
-  myanmar: ['myanmar','burma','tatmadaw','nug','aung san','junta','yangon'],
-  stances: ['china','russia','nato','un security','sanctions','diplomacy','geopolit','reaction','world leader','condemn','ceasefire call','mediat'],
-};
-
-function classifyItem(title, desc) {
-  const text = (title + ' ' + desc).toLowerCase();
-  // Check specific conflicts first
-  for (const [filter, words] of Object.entries(KEYWORDS)) {
-    if (filter === 'stances') continue;
-    if (words.some(w => text.includes(w))) return filter;
-  }
-  // Check stances
-  if (KEYWORDS.stances.some(w => text.includes(w))) return 'stances';
-  return null;
-}
-
-function timeAgo(dateStr) {
-  try {
-    const d = new Date(dateStr);
-    const diff = Date.now() - d.getTime();
-    const mins = Math.floor(diff / 60000);
-    if (mins < 60) return mins + 'm ago';
-    const hrs = Math.floor(mins / 60);
-    if (hrs < 24) return hrs + 'h ago';
-    return d.toLocaleDateString('en-GB', {day:'numeric', month:'short'});
-  } catch(e) { return ''; }
-}
-
-async function fetchRSSFeed(feedUrl, source) {
-  const proxy = 'https://api.allorigins.win/get?url=' + encodeURIComponent(feedUrl);
-  const res = await fetch(proxy, { signal: AbortSignal.timeout(8000) });
-  if (!res.ok) throw new Error('HTTP ' + res.status);
-  const data = await res.json();
-  const xml = new DOMParser().parseFromString(data.contents, 'text/xml');
-  const items = xml.querySelectorAll('item');
-  const results = [];
-  items.forEach(item => {
-    const title = item.querySelector('title')?.textContent?.trim() || '';
-    const desc  = item.querySelector('description')?.textContent?.replace(/<[^>]+>/g,'').trim() || '';
-    const pubDate = item.querySelector('pubDate')?.textContent || item.querySelector('dc\\:date,date')?.textContent || '';
-    const filter = classifyItem(title, desc);
-    if (filter) {
-      results.push({ filter, title, desc, source, pubDate, timeLabel: timeAgo(pubDate) });
-    }
-  });
-  return results;
-}
-
-// Rich static fallback — always available even if RSS fails
-const STATIC_NEWS = [
-  {filter:'iran',breaking:true,headline:'US-Israel strikes on Iran enter Day 3 — scope widens across 130+ cities',body:'Iran\'s Red Crescent confirmed 555+ deaths as US and Israeli forces struck targets across 130+ Iranian cities. Qatar shot down 2 Iranian jets and 7 ballistic missiles. The IRGC claimed strikes on 27 US military bases across 9 countries.',source:'Red Crescent / PBS / Al Jazeera',time:'Mar 3, 2026'},
-  {filter:'iran',breaking:true,headline:'Khamenei confirmed killed — Iran forms 3-person emergency council',body:'Supreme Leader Ayatollah Ali Khamenei was killed in an IDF strike on his Tehran compound. Iran\'s state broadcaster confirmed his death. A temporary 3-person leadership council was formed; the Assembly of Experts will choose a new supreme leader.',source:'CBS News / BBC',time:'Mar 1, 2026'},
-  {filter:'iran',breaking:false,headline:'3 US troops KIA, 5 wounded — Pentagon confirms first American casualties',body:'The Pentagon confirmed three US service members were killed and five seriously wounded since Operation Epic Fury began Feb 28. Trump stated there will "likely be more." Senate Republicans broadly backed the operation.',source:'NPR / Pentagon',time:'Mar 1, 2026'},
-  {filter:'iran',breaking:false,headline:'Saudi Aramco\'s Ras Tanura refinery hit; Qatar Airways grounds all flights',body:'Iranian drone strikes hit Saudi Arabia\'s Ras Tanura refinery (500K bbl/day capacity), prompting shutdown. Qatar suspended all air navigation; UAE ordered schools to remote learning. European gas futures surged 42%.',source:'CNBC / Reuters',time:'Mar 2, 2026'},
-  {filter:'iran',breaking:false,headline:'168 schoolgirls killed in Minab strike — Iran accuses Israel directly',body:'Iran\'s Human Rights Activists News Agency reported 168 girls killed when their elementary school in Minab was struck. Israel denied operating in the area. The UN Secretary-General called for an immediate investigation.',source:'HRANA / NPR',time:'Mar 1, 2026'},
-  {filter:'ukraine',breaking:false,headline:'Russia gains ~176 sq mi/month in 2025; Donetsk is 2026\'s key battleground',body:'International Crisis Group reports Russia has consolidated control over a fifth of Donetsk and large parts of Kherson and Zaporizhzhia oblasts. US has suspended financial aid, forcing European burden-sharing restructure.',source:'ICG / BBC',time:'Feb 2026'},
-  {filter:'ukraine',breaking:false,headline:'200,000 Russian military deaths confirmed by name via open-source project',body:'BBC Russian service and Mediazona confirmed 200,000 individual Russian military deaths by name. UK MoD estimates total Russian casualties (KIA+WIA) surpass 1.1 million. Zelenskyy confirmed ~400,000 Ukrainian total casualties.',source:'BBC Russian / Mediazona',time:'Feb 2026'},
-  {filter:'ukraine',breaking:false,headline:'100,000 left without power in Odesa after overnight infrastructure attack',body:'Russian cruise missiles and Shahed drones struck energy infrastructure in Odesa and Donetsk overnight. Two health workers were injured in Kherson when a medical facility was hit. Ukraine\'s air defence intercepted 14 of 22 projectiles.',source:'UN OCHA',time:'Mar 3, 2026'},
-  {filter:'gaza',breaking:false,headline:'73,600+ Palestinians confirmed killed — UK FM to UN Security Council',body:'UK Foreign Secretary Yvette Cooper told the UN Security Council that over 70,000 Palestinians have been killed. Gaza Health Ministry puts the figure at 73,600+. Academic models estimate 100,000–126,000 total deaths including indirect causes.',source:'UK Foreign Office / Gaza MoH',time:'Feb 2026'},
-  {filter:'gaza',breaking:false,headline:'Only 260 of 18,500 patients needing outside care evacuated from Gaza',body:'WHO and partners evacuated 55 patients and 72 companions in the latest convoy. OCHA warned that 18,500 patients require medical treatment unavailable in Gaza. Food, water and medicine deliveries face "persistent obstacles."',source:'UN OCHA / WHO',time:'Mar 3, 2026'},
-  {filter:'gaza',breaking:false,headline:'UN HRC: Israel bears responsibility for failure to prevent genocide',body:'The UN Human Rights Council\'s September 2025 report found Israel responsible for failing to prevent genocide in Gaza. The ICJ had previously ordered a halt to Rafah operations; operations continued. Multiple countries recalled ambassadors.',source:'UN Human Rights Council',time:'Sep 2025'},
-  {filter:'sudan',breaking:false,headline:'Drone strikes on El Sunut market, school in Dilling — OCHA deeply alarmed',body:'Drones struck a market in Al-Safia, West Kordofan during market hours, killing and injuring civilians. A primary school in Dilling, South Kordofan was also struck. UN OCHA said it was "deeply alarmed" by attacks on civilian infrastructure.',source:'UN OCHA',time:'Mar 3, 2026'},
-  {filter:'sudan',breaking:false,headline:'Sudan civilian killings 2.5× higher in 2025 vs 2024 — UN rights chief',body:'UN Human Rights Chief Volker Türk reported a 2.5× increase in civilian killings in Sudan in 2025. Since January 2026, drone strikes alone killed or injured ~600. RSF drone attacks on civilian infrastructure rose 38%, per ACLED.',source:'UN OHCHR',time:'Feb 2026'},
-  {filter:'sudan',breaking:false,headline:'Russia vetoes UNSC resolution to protect Sudan civilians — lone dissent',body:'Russia cast a lone veto on a UN Security Council draft resolution to protect civilians in Sudan, presided over by UK FM David Lammy. The vote followed similar vetoes that have paralysed Council action on Sudan since 2023.',source:'UN Security Council',time:'Feb 2026'},
-  {filter:'stances',breaking:false,headline:'China demands halt to Iran strikes; FM Wang Yi holds emergency talks with Lavrov',body:'Chinese FM Wang Yi held emergency talks with Russian FM Lavrov. China\'s MFA called for an "immediate end to hostilities against Iran" and stressed Iranian sovereignty. China confirmed one national killed in Tehran; 300+ evacuated.',source:'Xinhua / Chinese MFA',time:'Mar 2, 2026'},
-  {filter:'stances',breaking:false,headline:'Russia condemns strikes as "grave violation of international law"',body:'Russia\'s FM Lavrov called the US-Israel attacks a "grave violation of international law and the UN Charter." Russia and China jointly called for an emergency UNSC session. Russia has historically served as Iran\'s main UNSC protector.',source:'Reuters / Russian MFA',time:'Mar 2, 2026'},
-  {filter:'stances',breaking:false,headline:'Macron calls emergency UNSC session; UK-France joint statement urges restraint',body:'French President Macron called for an emergency UN Security Council meeting on Feb 28. Macron and UK PM Starmer issued a joint statement calling the escalation "greatly concerning." EU leaders echoed restraint and called for a political transition.',source:'Élysée / Downing Street',time:'Mar 1, 2026'},
-  {filter:'stances',breaking:false,headline:'Sen. Kaine: "This is an illegal war" — War Powers Resolution vote this week',body:'Democratic Senator Tim Kaine called the strikes "illegal" without Congressional authorization, citing the Constitution. Congress votes on the War Powers Resolution this week; Trump is expected to veto if passed. Senate Republicans largely support the operation.',source:'NPR / US Congress',time:'Mar 2, 2026'},
-  {filter:'stances',breaking:false,headline:'Oman: "Door to diplomacy open" — Iran new leadership may seek talks',body:'Oman\'s FM said diplomacy remains possible. Trump said Iran\'s emerging leadership has "signalled willingness to talk." CFR analysts warned: "Taking out Khamenei is not the same as regime change — the IRGC is the regime."',source:'Reuters / CFR',time:'Mar 2, 2026'},
-  {filter:'stances',breaking:false,headline:'Guterres: US-Israel strikes and Iranian retaliation both "threaten global peace"',body:'UN Secretary-General Guterres condemned both the US-Israeli strikes and Iran\'s retaliatory attacks. NATO raised missile defence vigilance across member states. The ICRC urged all parties to respect international humanitarian law.',source:'UN Secretary-General / ICRC',time:'Mar 1, 2026'},
-];
-
-function setLastUpdated(live) {
-  const now = new Date();
-  const el = document.getElementById('newsLastUpdated');
-  const src = live ? '● LIVE RSS' : '● CACHED';
-  if (el) el.textContent = src + ' · ' + now.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
-  lastFetchTime = now;
-}
-
-function showNewsLoading() {
-  const grid = document.getElementById('newsGrid');
-  grid.style.gridTemplateColumns = 'repeat(3,1fr)';
-  grid.innerHTML = Array(6).fill(0).map(() => `
-    <div class="news-item" style="opacity:.35;">
-      <div style="height:9px;background:var(--border);border-radius:2px;width:55%;margin-bottom:10px;animation:shimmer 1.4s infinite;"></div>
-      <div style="height:13px;background:var(--border2);border-radius:2px;width:90%;margin-bottom:6px;animation:shimmer 1.4s infinite .1s;"></div>
-      <div style="height:11px;background:var(--border);border-radius:2px;width:75%;margin-bottom:4px;animation:shimmer 1.4s infinite .2s;"></div>
-      <div style="height:11px;background:var(--border);border-radius:2px;width:60%;animation:shimmer 1.4s infinite .3s;"></div>
-    </div>`).join('');
-  const badge = document.getElementById('newsBadge');
-  if (badge) { badge.textContent = '⟳ FETCHING…'; badge.style.cssText='color:var(--accent4);background:rgba(233,196,106,.1);border:1px solid rgba(233,196,106,.2);'; }
-}
-
-function showNewsError(msg) {
-  console.warn('News RSS failed, using static data:', msg);
-  // Don't show error to user — just quietly use static data
-  loadStaticNews();
-}
-
-function loadStaticNews() {
-  cachedNewsItems = STATIC_NEWS.map(item => ({
-    ...item,
-    color: CONFLICT_CONFIG[item.filter]?.color || '#2ec4b6',
-    tag: CONFLICT_CONFIG[item.filter]?.tag || item.filter.toUpperCase(),
-  }));
-  setLastUpdated(false);
-  renderNews(currentFilter);
-  const badge = document.getElementById('newsBadge');
-  if (badge) { badge.textContent = '● READY'; badge.style.cssText='color:#4caf50;background:rgba(76,175,80,.12);border:1px solid rgba(76,175,80,.25);'; }
-}
-
-async function fetchLiveNews() {
-  showNewsLoading();
-
-  try {
-    // Try to fetch from real RSS feeds
-    const allItems = [];
-    const feedPromises = RSS_FEEDS.map(feed =>
-      fetchRSSFeed(feed.url, feed.source).catch(() => []) // silent fail per-feed
-    );
-    const results = await Promise.allSettled(feedPromises);
-    results.forEach(r => { if (r.status === 'fulfilled') allItems.push(...r.value); });
-
-    if (allItems.length < 5) throw new Error('Not enough RSS items: ' + allItems.length);
-
-    // Deduplicate by title similarity, limit to 3 per filter
-    const seen = new Set();
-    const filterCount = {};
-    const deduped = [];
-    for (const item of allItems) {
-      const key = item.title.slice(0,40).toLowerCase();
-      if (seen.has(key)) continue;
-      seen.add(key);
-      filterCount[item.filter] = (filterCount[item.filter] || 0) + 1;
-      if (filterCount[item.filter] > 4) continue;
-      deduped.push(item);
-    }
-
-    // Convert RSS items to display format
-    cachedNewsItems = deduped.map(item => ({
-      filter: item.filter,
-      breaking: item.timeLabel?.includes('m ago') || item.timeLabel?.includes('1h ago'),
-      color: CONFLICT_CONFIG[item.filter]?.color || '#2ec4b6',
-      tag: CONFLICT_CONFIG[item.filter]?.tag || item.filter.toUpperCase(),
-      headline: item.title,
-      body: item.desc?.slice(0, 220) + (item.desc?.length > 220 ? '…' : ''),
-      source: item.source,
-      time: item.timeLabel || '',
-    }));
-
-    // Merge with static items to fill any gaps (ensure all filters represented)
-    const presentFilters = new Set(cachedNewsItems.map(i => i.filter));
-    const allFilters = ['iran','ukraine','gaza','sudan','myanmar','stances'];
-    allFilters.forEach(f => {
-      if (!presentFilters.has(f)) {
-        const fallbacks = STATIC_NEWS.filter(s => s.filter === f).slice(0, 2);
-        fallbacks.forEach(fb => cachedNewsItems.push({
-          ...fb,
-          color: CONFLICT_CONFIG[fb.filter]?.color || '#2ec4b6',
-          tag: CONFLICT_CONFIG[fb.filter]?.tag || fb.filter.toUpperCase(),
-        }));
+try {
+  if (typeof Chart !== 'undefined') {
+    Chart.defaults.color = '#4a5a6e';
+    Chart.defaults.borderColor = '#1c2535';
+    var donutEl = document.getElementById('donutChart');
+    if (donutEl) new Chart(donutEl, {
+      type: 'doughnut',
+      data: {
+        labels: ['US-Israel vs Iran','Russia-Ukraine','Sudan','Israel-Gaza','Myanmar','DRC','Others'],
+        datasets: [{
+          data: [8,34,16,12,7,6,17],
+          backgroundColor: ['#ff4d4d','#4fc3f7','#ff9800','#ef5350','#ab47bc','#26a69a','#455a64'],
+          borderWidth: 2, borderColor: '#0c0f15',
+        }]
+      },
+      options: {
+        responsive:true, maintainAspectRatio:false,
+        plugins: {
+          legend: {position:'right',labels:{padding:12,font:{family:'IBM Plex Mono',size:10},color:'#6a7e94',boxWidth:9}},
+          tooltip: {callbacks:{label:function(c){return ' ' + c.label + ': ' + c.parsed + '% of deaths';}}}
+        },
+        cutout:'70%'
       }
     });
-
-    setLastUpdated(true);
-    renderNews(currentFilter);
-    const badge = document.getElementById('newsBadge');
-    if (badge) { badge.textContent = '● LIVE'; badge.style.cssText='color:#4caf50;background:rgba(76,175,80,.12);border:1px solid rgba(76,175,80,.25);'; }
-
-  } catch(err) {
-    showNewsError(err.message);
+    var barEl = document.getElementById('barChart');
+    if (barEl) new Chart(barEl, {
+      type: 'bar',
+      data: {
+        labels: ['Iran (2026)','Ukraine (Rus.mil)','Ukraine (Civil)','Gaza (Pal.)','Sudan (Civil)','Myanmar'],
+        datasets: [{
+          label: 'Killed (verified)',
+          data: [555,200000,15000,73600,28700,5000],
+          backgroundColor: ['#ff4d4dbb','#4fc3f799','#4fc3f744','#ef535099','#ff980099','#ab47bc99'],
+          borderRadius: 2
+        }]
+      },
+      options: {
+        responsive:true, maintainAspectRatio:false,
+        plugins: {legend:{labels:{font:{family:'IBM Plex Mono',size:10},color:'#6a7e94',boxWidth:9}}},
+        scales: {
+          x: {ticks:{font:{family:'IBM Plex Mono',size:9},color:'#4a5a6e'},grid:{color:'#1c253511'}},
+          y: {ticks:{font:{family:'IBM Plex Mono',size:9},color:'#4a5a6e',callback:function(v){return v>=1000?(v/1000).toFixed(0)+'K':v}},grid:{color:'#1c2535'}}
+        }
+      }
+    });
   }
+} catch(e) { console.warn('Charts error:', e); }
 
-  // Schedule next refresh
-  clearTimeout(refreshTimer);
-  refreshTimer = setTimeout(fetchLiveNews, REFRESH_INTERVAL);
-  startCountdown();
+/* ===================== NEWS ENGINE =====================
+   INSTANT: Static news shows in 0ms — no loading screen.
+   BACKGROUND: /api/news (Netlify function) fetches real AI news.
+   SWAP: Live results silently replace static when ready.
+============================================================================ */
+
+var currentFilter = 'all';
+var cachedNewsItems = [];
+var refreshTimer = null;
+var REFRESH_INTERVAL = 5 * 60 * 1000;
+
+var CC = {
+  iran:    {color:'#ff4d4d', tag:'🔴 US-IRAN'},
+  ukraine: {color:'#4fc3f7', tag:'🇺🇦 UKRAINE'},
+  gaza:    {color:'#ef5350', tag:'🇵🇸 GAZA'},
+  sudan:   {color:'#ff9800', tag:'🇸🇩 SUDAN'},
+  myanmar: {color:'#ab47bc', tag:'🇲🇲 MYANMAR'},
+  stances: {color:'#2ec4b6', tag:'🌐 WORLD VIEWS'},
+};
+
+var STATIC = [
+  {filter:'iran',breaking:true,headline:'US-Israel strikes on Iran enter Day 3 — 130+ cities hit',body:'Red Crescent confirmed 555+ deaths as US-Israeli forces struck 130+ Iranian cities. Qatar shot down 2 Iranian jets and 7 ballistic missiles. IRGC claimed strikes on 27 US military bases across 9 countries.',source:'Red Crescent / PBS',time:'Mar 3, 2026'},
+  {filter:'iran',breaking:true,headline:'Khamenei killed — 3-person emergency leadership council formed',body:'Supreme Leader Khamenei was killed in an IDF strike on his Tehran compound. A temporary 3-person leadership council was formed. Iranians poured into streets to celebrate in multiple cities.',source:'CBS News / BBC',time:'Mar 1, 2026'},
+  {filter:'iran',breaking:false,headline:'3 US troops KIA confirmed — Pentagon; Trump vows operation continues',body:'Pentagon confirmed three US service members killed and five seriously wounded since Operation Epic Fury began Feb 28. Trump said the operation will continue 4 weeks or less.',source:'NPR / Pentagon',time:'Mar 1, 2026'},
+  {filter:'iran',breaking:false,headline:'Ras Tanura refinery hit; Qatar Airways grounded; Europe gas +42%',body:'Iranian drones hit Saudi Arabia Ras Tanura refinery shutting 500K bbl/day output. Qatar suspended all flights. UAE ordered remote schooling. European gas futures surged 42%.',source:'CNBC / Reuters',time:'Mar 2, 2026'},
+  {filter:'iran',breaking:false,headline:'168 schoolgirls killed in Minab strike — UN demands investigation',body:'HRANA reported 168 girls killed when their elementary school in Minab was struck. Israel denied operating in the area. The UN Secretary-General called for an immediate independent investigation.',source:'HRANA / NPR',time:'Mar 1, 2026'},
+  {filter:'ukraine',breaking:false,headline:'Russia gains 176 sq mi/month in 2025 — Donetsk the main 2026 front',body:'ICG reports Russia consolidated control over a fifth of Donetsk and large parts of Kherson and Zaporizhzhia. US suspended financial aid, forcing European burden-sharing restructure.',source:'ICG / BBC',time:'Feb 2026'},
+  {filter:'ukraine',breaking:false,headline:'200,000 Russian military deaths confirmed by name — Mediazona',body:'BBC Russian service and Mediazona confirmed 200,000 individual Russian military deaths by name. UK MoD says total Russian casualties surpass 1.1 million. Zelensky confirmed ~400,000 Ukrainian total casualties.',source:'BBC Russian / Mediazona',time:'Feb 2026'},
+  {filter:'ukraine',breaking:false,headline:'100,000 without power in Odesa after overnight Russian drone attack',body:'Russian Shahed drones struck energy infrastructure across Odesa and Donetsk. Two health workers injured when a medical facility was hit in Kherson.',source:'UN OCHA',time:'Mar 3, 2026'},
+  {filter:'gaza',breaking:false,headline:'73,600+ Palestinians confirmed killed — UK FM to UN Security Council',body:'UK Foreign Secretary Yvette Cooper told the UNSC over 70,000 Palestinians have been killed. Gaza MoH puts the figure at 73,600+. Academic models estimate up to 126,000 deaths including indirect causes.',source:'UK Foreign Office / Gaza MoH',time:'Feb 2026'},
+  {filter:'gaza',breaking:false,headline:'Only 260 of 18,500 patients needing outside care evacuated from Gaza',body:'WHO evacuated 55 patients in the latest convoy. OCHA warned 18,500 patients require treatment unavailable inside Gaza. Food, water and medicine deliveries face persistent obstacles.',source:'UN OCHA / WHO',time:'Mar 3, 2026'},
+  {filter:'gaza',breaking:false,headline:'UN HRC: Israel bears responsibility for failure to prevent genocide',body:'The UN Human Rights Council September 2025 report found Israel responsible for failing to prevent genocide. The ICJ had ordered a halt to Rafah operations in May 2024; operations continued.',source:'UN Human Rights Council',time:'Sep 2025'},
+  {filter:'sudan',breaking:false,headline:'Drone strikes on market and school — OCHA deeply alarmed',body:'Drones struck a busy market in Al-Safia, West Kordofan and a primary school in Dilling, South Kordofan. UN OCHA said it was deeply alarmed by escalating attacks on civilian infrastructure.',source:'UN OCHA',time:'Mar 3, 2026'},
+  {filter:'sudan',breaking:false,headline:'Sudan civilian killings 2.5x higher in 2025 than 2024 — UN rights chief',body:'UN Human Rights Chief Volker Turk reported a 2.5x increase in civilian killings in Sudan in 2025. Since January 2026 drone strikes killed or injured around 600 civilians.',source:'UN OHCHR',time:'Feb 2026'},
+  {filter:'sudan',breaking:false,headline:'Russia vetoes UNSC resolution to protect Sudan civilians',body:'Russia cast a lone veto on a UN Security Council draft resolution to protect civilians in Sudan, presided over by UK FM David Lammy. Russia has blocked similar resolutions repeatedly since 2023.',source:'UN Security Council',time:'Feb 2026'},
+  {filter:'stances',breaking:false,headline:'China FM demands halt to Iran strikes; holds emergency call with Lavrov',body:'Chinese FM Wang Yi held emergency talks with Russian FM Lavrov. China MFA demanded an immediate end to hostilities against Iran. China confirmed one national killed in Tehran; 300+ evacuated.',source:'Xinhua / Chinese MFA',time:'Mar 2, 2026'},
+  {filter:'stances',breaking:false,headline:'Russia: US-Israel strikes are a grave violation of international law',body:'Russia FM Lavrov called the attacks a grave violation of international law and the UN Charter. Russia and China jointly called for an emergency UNSC session.',source:'Reuters / Russian MFA',time:'Mar 2, 2026'},
+  {filter:'stances',breaking:false,headline:'Macron and Starmer joint statement calls escalation greatly concerning',body:'French President Macron called an emergency UNSC meeting. Macron and UK PM Starmer jointly urged immediate restraint. EU leaders echoed restraint and called for political transition in Iran.',source:'Elysee / Downing Street',time:'Mar 1, 2026'},
+  {filter:'stances',breaking:false,headline:'US Sen. Kaine: This is an illegal war — War Powers vote this week',body:'Sen. Tim Kaine called the strikes illegal without Congressional authorization. Congress votes on the War Powers Resolution this week. Senate Republicans broadly support the operation; Trump expected to veto.',source:'NPR / US Congress',time:'Mar 2, 2026'},
+  {filter:'stances',breaking:false,headline:'Guterres condemns both US-Israel strikes and Iranian retaliation',body:'UN Secretary-General Guterres said both the US-Israeli strikes and Iranian retaliatory attacks undermine international peace and security. NATO raised missile defence vigilance for all member states.',source:'UN / NATO',time:'Mar 1, 2026'},
+  {filter:'stances',breaking:false,headline:'Oman: Door to diplomacy remains open — Iran new leaders may talk',body:'Oman FM confirmed diplomacy remains possible. Trump said Iran emerging leadership has signalled willingness to negotiate. CFR warned: removing Khamenei is not the same as regime change — the IRGC remains in control.',source:'Reuters / CFR',time:'Mar 2, 2026'},
+];
+
+function enrich(items) {
+  return items.map(function(item) {
+    return Object.assign({}, item, {
+      color: CC[item.filter] ? CC[item.filter].color : '#2ec4b6',
+      tag:   CC[item.filter] ? CC[item.filter].tag   : (item.filter || 'NEWS').toUpperCase(),
+    });
+  });
 }
 
-let countdownInterval = null;
-function startCountdown() {
-  clearInterval(countdownInterval);
-  let secs = REFRESH_INTERVAL / 1000;
-  const el = document.getElementById('newsCountdown');
-  countdownInterval = setInterval(() => {
-    secs--;
-    if (secs <= 0) { clearInterval(countdownInterval); return; }
-    const m = Math.floor(secs/60), s = secs % 60;
-    if (el) el.textContent = `· REFRESH IN ${m}:${String(s).padStart(2,'0')}`;
-  }, 1000);
-}
-
-function filterNews(filter, btn) {
-  currentFilter = filter;
-  document.querySelectorAll('.news-tab').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-  renderNews(filter);
+function setBadge(text, color) {
+  var b = document.getElementById('newsBadge');
+  var u = document.getElementById('newsLastUpdated');
+  if (b) { b.textContent = text; b.style.cssText = 'color:' + color + ';background:' + color + '18;border:1px solid ' + color + '44;'; }
+  if (u) u.textContent = '· ' + new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
 }
 
 function renderNews(filter) {
-  const grid = document.getElementById('newsGrid');
-  if (!grid) return;
-  if (!cachedNewsItems.length) return;
-  const items = filter === 'all' ? cachedNewsItems : cachedNewsItems.filter(n => n.filter === filter);
+  var grid = document.getElementById('newsGrid');
+  if (!grid || !cachedNewsItems.length) return;
+  var items = filter === 'all' ? cachedNewsItems : cachedNewsItems.filter(function(n) { return n.filter === filter; });
   if (!items.length) {
     grid.style.gridTemplateColumns = '1fr';
-    grid.innerHTML = `<div style="padding:32px;text-align:center;font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--dim);">No stories found. Try refreshing.</div>`;
+    grid.innerHTML = '<div style="padding:32px;text-align:center;font-family:IBM Plex Mono,monospace;font-size:11px;color:var(--dim);">No stories for this filter.</div>';
     return;
   }
-  const cols = items.length === 1 ? 1 : items.length === 2 ? 2 : 3;
-  grid.style.gridTemplateColumns = `repeat(${cols},1fr)`;
+  var cols = items.length <= 2 ? items.length : 3;
+  grid.style.gridTemplateColumns = 'repeat(' + cols + ',1fr)';
   grid.innerHTML = '';
-  items.forEach(n => {
-    const el = document.createElement('div');
+  items.forEach(function(n) {
+    var el = document.createElement('div');
     el.className = 'news-item' + (n.breaking ? ' breaking' : '');
-    el.innerHTML = `
-      <div class="news-meta">
-        <span class="news-conflict-tag" style="color:${n.color};border-color:${n.color}44">${n.tag}</span>
-        ${n.time ? `<span class="news-time">${n.time}</span>` : ''}
-        <span class="news-source">— ${n.source || ''}</span>
-      </div>
-      <div class="news-headline">${n.headline || ''}</div>
-      <div class="news-body">${n.body || ''}</div>
-    `;
+    el.innerHTML =
+      '<div class="news-meta">' +
+        '<span class="news-conflict-tag" style="color:' + n.color + ';border-color:' + n.color + '44">' + n.tag + '</span>' +
+        (n.time ? '<span class="news-time">' + n.time + '</span>' : '') +
+        '<span class="news-source">— ' + (n.source || '') + '</span>' +
+      '</div>' +
+      '<div class="news-headline">' + (n.headline || '') + '</div>' +
+      '<div class="news-body">' + (n.body || '') + '</div>';
     grid.appendChild(el);
   });
 }
 
-// Boot — try live RSS first, fall back to static instantly
-fetchLiveNews().catch(() => loadStaticNews());
+function filterNews(filter, btn) {
+  currentFilter = filter;
+  document.querySelectorAll('.news-tab').forEach(function(b) { b.classList.remove('active'); });
+  btn.classList.add('active');
+  renderNews(filter);
+}
+
+var countdownInterval = null;
+function startCountdown() {
+  clearInterval(countdownInterval);
+  var secs = REFRESH_INTERVAL / 1000;
+  var el = document.getElementById('newsCountdown');
+  countdownInterval = setInterval(function() {
+    secs--;
+    if (secs <= 0) { clearInterval(countdownInterval); return; }
+    var m = Math.floor(secs/60), s = secs%60;
+    if (el) el.textContent = '· refresh in ' + m + ':' + (s < 10 ? '0' + s : s);
+  }, 1000);
+}
+
+async function fetchLive() {
+  setBadge('⟳ UPDATING', '#e9c46a');
+  try {
+    var ctrl = new AbortController();
+    var tid = setTimeout(function() { ctrl.abort(); }, 30000);
+    var res = await fetch('/api/news', { signal: ctrl.signal });
+    clearTimeout(tid);
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    var data = await res.json();
+    if (data.error) throw new Error(data.error);
+    if (!Array.isArray(data.items) || !data.items.length) throw new Error('empty response');
+    cachedNewsItems = enrich(data.items);
+    renderNews(currentFilter);
+    setBadge('● LIVE', '#4caf50');
+  } catch(e) {
+    console.info('Live news unavailable:', e.message);
+    setBadge('● READY', '#4caf50');
+  }
+  clearTimeout(refreshTimer);
+  refreshTimer = setTimeout(fetchLive, REFRESH_INTERVAL);
+  startCountdown();
+}
+
+function manualRefresh() {
+  clearTimeout(refreshTimer);
+  clearInterval(countdownInterval);
+  fetchLive();
+}
+
+// INSTANT BOOT — static news in 0ms, live fetch in background
+cachedNewsItems = enrich(STATIC);
+renderNews(currentFilter);
+setBadge('● READY', '#4caf50');
+setTimeout(fetchLive, 300);
 
 /* ===================== DETAIL VIEW ===================== */
-function showDetail(c){
-  const dv=document.getElementById('detail-view');
-  const dc=document.getElementById('detail-content');
+function showDetail(c) {
+  try {
+    var dv = document.getElementById('detail-view');
+    var dc = document.getElementById('detail-content');
+    var tagsHtml = c.tags.map(function(t) {
+      return '<span class="tag" style="color:' + t.color + ';border-color:' + t.color + '44">' + t.label + '</span>';
+    }).join('');
+    var casRows = c.casualties.rows.map(function(r) {
+      return '<div class="cost-row"><div class="cost-label"><strong style="color:var(--bright)">' + r.label + '</strong></div><div style="text-align:right"><div class="cost-val">' + r.val + '</div><div style="font-size:9px;color:var(--dim);font-family:IBM Plex Mono,monospace;margin-top:2px">' + r.src + '</div></div></div>';
+    }).join('');
+    var geoItems = c.geopolitics.map(function(g) {
+      return '<div class="item"><div class="item-icon">' + g.icon + '</div><div class="item-body"><div class="item-title">' + g.title + '</div><div class="item-desc">' + g.desc + '</div></div></div>';
+    }).join('');
+    var repItems = c.repercussions.map(function(r) {
+      return '<div class="item"><div class="item-icon">' + r.icon + '</div><div class="item-body"><div class="item-title">' + r.title + '</div><div class="item-desc">' + r.desc + '</div></div></div>';
+    }).join('');
+    var costRows = c.cost.rows.map(function(r) {
+      return '<div class="cost-row"><div class="cost-label">' + r.label + '</div><div class="cost-val">' + r.val + '</div></div>';
+    }).join('');
+    var mktRows = c.market.rows.map(function(r) {
+      var trendColor = r.dir === 'up' ? '#4caf50' : '#ef5350';
+      return '<div class="mkt-row"><div class="mkt-icon">' + r.icon + '</div><div><div class="mkt-name">' + r.name + '</div><div class="mkt-sub">' + r.sub + '</div></div><div class="mkt-trend" style="color:' + trendColor + '">' + r.trend + '</div><div class="mkt-note">' + r.note + '</div></div>';
+    }).join('');
 
-  // Build tags html
-  const tagsHtml=c.tags.map(t=>`<span class="tag" style="color:${t.color};border-color:${t.color}44">${t.label}</span>`).join('');
+    dc.innerHTML =
+      '<div class="detail-hero" style="border-left:4px solid ' + c.color + '">' +
+        '<button class="back-btn" onclick="showHome()">← BACK TO ALL CONFLICTS</button>' +
+        '<div style="margin-top:16px;display:flex;align-items:center;gap:12px;">' +
+          '<div style="font-size:36px">' + c.flag + '</div>' +
+          '<div>' +
+            '<div style="font-family:Bebas Neue,sans-serif;font-size:clamp(28px,4vw,48px);color:var(--bright);letter-spacing:2px">' + c.name + '</div>' +
+            '<div style="font-family:IBM Plex Mono,monospace;font-size:10px;color:var(--dim);margin-top:4px">SINCE ' + c.startYear + ' · ' + tagsHtml + '</div>' +
+          '</div>' +
+        '</div>' +
+      '</div>' +
+      '<div class="detail-grid">' +
+        '<div class="card detail-full"><div class="card-hdr"><span class="card-title">// Verified Casualty Data</span><span class="badge b-src">VERIFIED SOURCES</span></div>' + casRows + '</div>' +
+        '<div class="card"><div class="card-hdr"><span class="card-title">// Geopolitical Context</span></div><div class="items-panel">' + geoItems + '</div></div>' +
+        '<div class="card"><div class="card-hdr"><span class="card-title">// Global Repercussions</span></div><div class="items-panel">' + repItems + '</div></div>' +
+        '<div class="card"><div class="card-hdr"><span class="card-title">// Cost of War</span></div>' + costRows + '</div>' +
+        '<div class="card"><div class="card-hdr"><span class="card-title">// Market Impact & Outlook</span><span class="badge b-src">ANALYSIS</span></div><div class="market-panel"><div class="mkt-intro">' + c.market.intro + '</div>' + mktRows + '<div class="mkt-disclaimer">⚠ NOT financial advice. War is unpredictable. Consult a licensed financial advisor before making any investment decisions.</div></div></div>' +
+      '</div>';
 
-  // Casualties rows
-  const casRows=c.casualties.rows.map(r=>`
-    <div class="cost-row">
-      <div class="cost-label"><strong style="color:var(--bright)">${r.label}</strong></div>
-      <div style="text-align:right">
-        <div class="cost-val">${r.val}</div>
-        <div style="font-size:9px;color:var(--dim);font-family:'IBM Plex Mono',monospace;margin-top:2px">${r.src}</div>
-      </div>
-    </div>`).join('');
-
-  // Geo items
-  const geoItems=c.geopolitics.map(g=>`<div class="item"><div class="item-icon">${g.icon}</div><div class="item-body"><div class="item-title">${g.title}</div><div class="item-desc">${g.desc}</div></div></div>`).join('');
-
-  // Repercussions
-  const repItems=c.repercussions.map(r=>`<div class="item"><div class="item-icon">${r.icon}</div><div class="item-body"><div class="item-title">${r.title}</div><div class="item-desc">${r.desc}</div></div></div>`).join('');
-
-  // Cost rows
-  const costRows=c.cost.rows.map(r=>`<div class="cost-row"><div class="cost-label">${r.label}</div><div class="cost-val">${r.val}</div></div>`).join('');
-
-  // Market rows
-  const mktRows=c.market.rows.map(r=>`
-    <div class="mkt-row">
-      <div class="mkt-icon">${r.icon}</div>
-      <div><div class="mkt-name">${r.name}</div><div class="mkt-sub">${r.sub}</div></div>
-      <div class="mkt-trend ${r.dir}">${r.trend}</div>
-      <div class="mkt-note">${r.note}</div>
-    </div>`).join('');
-
-  dc.innerHTML=`
-    <div class="detail-hero" style="border-left:4px solid ${c.color}">
-      <button class="back-btn" onclick="showHome()">← BACK TO ALL CONFLICTS</button>
-      <div class="detail-flag">${c.flag}</div>
-      <h1 class="detail-title" style="color:${c.color}">${c.name}</h1>
-      <div class="detail-subtitle">// ONGOING SINCE ${c.startYear} // ${c.status} AS OF MARCH 2026</div>
-      <div class="detail-tags">${tagsHtml}</div>
-    </div>
-
-    <div class="detail-grid">
-      <!-- Casualties -->
-      <div class="card detail-full">
-        <div class="card-hdr"><span class="card-title">// VERIFIED CASUALTY DATA</span><span class="badge b-live">● SOURCED FROM UN / ACLED / OFFICIAL MoH</span></div>
-        ${casRows}
-      </div>
-
-      <!-- Geopolitics -->
-      <div class="card">
-        <div class="card-hdr"><span class="card-title">// GEOPOLITICAL CONTEXT</span></div>
-        <div class="item-list">${geoItems}</div>
-      </div>
-
-      <!-- Repercussions -->
-      <div class="card">
-        <div class="card-hdr"><span class="card-title">// GLOBAL REPERCUSSIONS</span></div>
-        <div class="item-list">${repItems}</div>
-      </div>
-
-      <!-- Cost of war -->
-      <div class="card">
-        <div class="card-hdr"><span class="card-title">// COST OF WAR</span><span class="badge b-src">ECONOMIC TOLL</span></div>
-        ${costRows}
-      </div>
-
-      <!-- Market Impact -->
-      <div class="card">
-        <div class="card-hdr"><span class="card-title">// MARKET IMPACT & OUTLOOK</span><span class="badge" style="background:rgba(233,196,106,.12);color:var(--accent4);border:1px solid rgba(233,196,106,.25);">ANALYSIS</span></div>
-        <div class="market-panel">
-          <div class="mkt-intro">${c.market.intro}</div>
-          ${mktRows}
-          <div class="mkt-disclaimer">⚠ DISCLAIMER: Market direction indicators are analytical assessments based on historical conflict-market correlations and analyst consensus. They are NOT financial advice and do NOT predict specific price movements. War is inherently unpredictable. Consult a licensed financial advisor before making investment decisions. Sudden ceasefire, escalation, or diplomatic breakthrough can reverse any trend immediately.</div>
-        </div>
-      </div>
-    </div>
-  `;
-
-  document.getElementById('home-view').classList.add('hidden');
-  dv.classList.remove('hidden');
-  dv.scrollTop=0;
+    document.getElementById('home-view').classList.add('hidden');
+    dv.classList.remove('hidden');
+    dv.scrollTop = 0;
+  } catch(e) { console.warn('Detail error:', e); }
 }
 
-function showHome(){
-  document.getElementById('detail-view').classList.add('hidden');
-  document.getElementById('home-view').classList.remove('hidden');
+function showHome() {
+  try {
+    document.getElementById('detail-view').classList.add('hidden');
+    document.getElementById('home-view').classList.remove('hidden');
+  } catch(e) { console.warn(e); }
 }
+
+}); // end DOMContentLoaded
 </script>
 </body>
 </html>
